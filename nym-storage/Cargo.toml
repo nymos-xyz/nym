@@ -1,0 +1,28 @@
+[package]
+name = "nym-storage"
+version = "0.1.0"
+edition = "2021"
+description = "Encrypted storage layer for Nym with privacy-preserving indices"
+
+[dependencies]
+nym-crypto = { path = "../nym-crypto" }
+nym-core = { path = "../nym-core" }
+
+# Storage backend
+rocksdb = { workspace = true }
+
+# Serialization
+serde = { workspace = true }
+bincode = { workspace = true }
+
+# Error handling
+thiserror = { workspace = true }
+
+# Async
+tokio = { workspace = true }
+
+# Compression
+lz4 = "1.25"
+
+# Utilities
+hex = "0.4"

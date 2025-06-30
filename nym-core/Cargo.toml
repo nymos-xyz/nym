@@ -1,0 +1,25 @@
+[package]
+name = "nym-core"
+version = "0.1.0"
+edition = "2021"
+description = "Core data structures and types for Nym with QuID integration"
+
+[dependencies]
+nym-crypto = { path = "../nym-crypto" }
+
+# QuID integration (will integrate with actual QuID crate)
+# quid-core = { path = "../../../quid/quid-core" }
+
+# Serialization
+serde = { workspace = true }
+bincode = { workspace = true }
+
+# Error handling
+thiserror = { workspace = true }
+
+# Time handling
+chrono = { workspace = true }
+
+# Utilities
+hex = "0.4"
+rand = { workspace = true }

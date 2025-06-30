@@ -1,0 +1,7 @@
+[package]
+name = "nym-network"
+version = "0.1.0"
+edition = "2021"
+description = "Placeholder for nym-network"
+
+[dependencies]

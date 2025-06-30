@@ -1,0 +1,87 @@
+# Rust build artifacts
+/target/
+**/target/
+
+# Rust lock files (keep for applications, ignore for libraries)
+Cargo.lock
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Dependency directories
+node_modules/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# dotenv environment variables file
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build outputs
+/build/
+/dist/
+
+# Test coverage
+coverage/
+*.lcov
+
+# Temporary files
+tmp/
+temp/
+
+# Nym specific files
+# Wallet data (never commit private keys!)
+*.wallet
+*.keystore
+private_keys/
+
+# Test data
+test_data/
+*.test.db
+
+# Local configuration
+local.toml
+dev.toml
+
+# Benchmarking results
+bench_results/
+
+# Flamegraph files
+flamegraph.svg
+perf.data
+
+# Documentation build
+/book/
+
+# Backup files
+*.bak
+*.backup
