@@ -1,6 +1,6 @@
 # Nym - Quantum-Resistant Anonymous Cryptocurrency
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: 0BSD](https://img.shields.io/badge/License-0BSD-freen.svg)](https://opensource.org/licenses/0BSD)
 [![Rust](https://img.shields.io/badge/rust-stable-brightgreen.svg)](https://www.rust-lang.org/)
 
 Nym is a privacy-focused cryptocurrency built with quantum-resistant cryptography, featuring stealth addresses, confidential transactions, and QuID-based universal authentication.
