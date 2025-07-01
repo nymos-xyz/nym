@@ -2,6 +2,33 @@
 name = "nym-network"
 version = "0.1.0"
 edition = "2021"
-description = "Placeholder for nym-network"
+description = "P2P networking layer for Nym with privacy-preserving communication"
 
 [dependencies]
+nym-crypto = { path = "../nym-crypto" }
+nym-core = { path = "../nym-core" }
+
+# Networking
+tokio = { workspace = true }
+tokio-util = "0.7"
+futures = "0.3"
+
+# Serialization
+serde = { workspace = true }
+bincode = { workspace = true }
+
+# Error handling
+thiserror = { workspace = true }
+anyhow = "1.0"
+
+# Utilities
+hex = "0.4"
+rand = "0.8"
+tracing = "0.1"
+
+# Networking protocols
+# libp2p = "0.51"  # Temporarily removed due to edition2024 requirement
+
+[dev-dependencies]
+tempfile = "3.0"
+tokio-test = "0.4"
