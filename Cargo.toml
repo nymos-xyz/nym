@@ -54,6 +54,10 @@ rocksdb = "0.21"
 chrono = { version = "0.4", features = ["serde"] }
 
 [dependencies]
+# QuID dependency - Nym uses QuID for authentication
+quid = { path = "../quid" }
+
+# Core Nym components
 nym-core = { path = "nym-core" }
 nym-crypto = { path = "nym-crypto" }
 nym-consensus = { path = "nym-consensus" }
