@@ -5,7 +5,7 @@ use nym_crypto::CryptoError;
 use nym_core::CoreError;
 
 /// Errors that can occur during network operations
-#[derive(Error, Debug)]
+#[derive(Error, Debug, Clone)]
 pub enum NetworkError {
     #[error("Connection failed: {reason}")]
     ConnectionFailed { reason: String },
@@ -46,17 +46,23 @@ pub enum NetworkError {
     #[error("Serialization error: {reason}")]
     Serialization { reason: String },
     
-    #[error("Crypto error: {0}")]
-    Crypto(#[from] CryptoError),
+    #[error("Bootstrap error: {reason}")]
+    BootstrapError { reason: String },
     
-    #[error("Core error: {0}")]
-    Core(#[from] CoreError),
+    #[error("Subscription error: {reason}")]
+    SubscriptionError { reason: String },
     
-    #[error("IO error: {0}")]
-    Io(#[from] std::io::Error),
+    #[error("Publish error: {reason}")]
+    PublishError { reason: String },
     
-    // #[error("LibP2P error: {0}")]
-    // LibP2P(#[from] libp2p::swarm::SwarmError),
+    #[error("Crypto error: {reason}")]
+    Crypto { reason: String },
+    
+    #[error("Core error: {reason}")]
+    Core { reason: String },
+    
+    #[error("IO error: {reason}")]
+    Io { reason: String },
 }
 
 /// Result type for network operations

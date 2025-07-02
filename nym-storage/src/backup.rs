@@ -659,4 +659,229 @@ mod tests {
         assert_eq!(stats.full_backups, 1);
         assert_eq!(stats.incremental_backups, 1);
     }
+    
+    #[test]
+    fn test_backup_config_validation() {
+        let config = BackupConfig::default();
+        
+        // Test default configuration
+        assert!(config.encrypted);
+        assert!(config.compressed);
+        assert_eq!(config.max_backups, 10);
+        assert_eq!(config.backup_interval, 3600);
+        assert_eq!(config.backup_path, PathBuf::from("./backups"));
+        assert_eq!(config.encryption_key.len(), 32);
+    }
+    
+    #[test]
+    fn test_backup_metadata_creation() {
+        let temp_dir = TempDir::new().unwrap();
+        let store_config = EncryptionConfig::new(vec![1u8; 32], SecurityLevel::Level1);
+        let store = EncryptedStore::new(temp_dir.path().join("store"), store_config).unwrap();
+        
+        let backup_config = BackupConfig {
+            backup_path: temp_dir.path().join("backups").to_path_buf(),
+            ..Default::default()
+        };
+        
+        let mut backup_manager = BackupManager::new(store, backup_config).unwrap();
+        
+        let metadata = backup_manager.create_full_backup().unwrap();
+        
+        // Verify metadata fields
+        assert!(metadata.timestamp > 0);
+        assert_eq!(metadata.version, "1.0");
+        assert!(matches!(metadata.backup_type, BackupType::Full));
+        assert!(metadata.encrypted);
+        assert!(metadata.compressed);
+        assert!(metadata.size > 0);
+        assert_ne!(metadata.checksum.as_bytes(), &[0u8; 32]);
+    }
+    
+    #[test]
+    fn test_backup_incremental_functionality() {
+        let temp_dir = TempDir::new().unwrap();
+        let store_config = EncryptionConfig::new(vec![1u8; 32], SecurityLevel::Level1);
+        let store = EncryptedStore::new(temp_dir.path().join("store"), store_config).unwrap();
+        
+        let backup_config = BackupConfig {
+            backup_path: temp_dir.path().join("backups").to_path_buf(),
+            ..Default::default()
+        };
+        
+        let mut backup_manager = BackupManager::new(store, backup_config).unwrap();
+        
+        // Create incremental backup
+        let since_height = 500;
+        let metadata = backup_manager.create_incremental_backup(since_height).unwrap();
+        
+        // Verify incremental backup metadata
+        if let BackupType::Incremental { since_height: backup_height } = metadata.backup_type {
+            assert_eq!(backup_height, since_height);
+        } else {
+            panic!("Expected incremental backup type");
+        }
+        
+        assert!(metadata.timestamp > 0);
+        assert_eq!(metadata.version, "1.0");
+    }
+    
+    #[test]
+    fn test_backup_compression_encryption() {
+        let temp_dir = TempDir::new().unwrap();
+        let store_config = EncryptionConfig::new(vec![1u8; 32], SecurityLevel::Level1);
+        let store = EncryptedStore::new(temp_dir.path().join("store"), store_config).unwrap();
+        
+        // Test with encryption and compression enabled
+        let backup_config_encrypted = BackupConfig {
+            backup_path: temp_dir.path().join("backups_encrypted").to_path_buf(),
+            encrypted: true,
+            compressed: true,
+            ..Default::default()
+        };
+        
+        let mut backup_manager_encrypted = BackupManager::new(store.clone(), backup_config_encrypted).unwrap();
+        let metadata_encrypted = backup_manager_encrypted.create_full_backup().unwrap();
+        
+        // Test with encryption and compression disabled
+        let backup_config_plain = BackupConfig {
+            backup_path: temp_dir.path().join("backups_plain").to_path_buf(),
+            encrypted: false,
+            compressed: false,
+            ..Default::default()
+        };
+        
+        let mut backup_manager_plain = BackupManager::new(store, backup_config_plain).unwrap();
+        let metadata_plain = backup_manager_plain.create_full_backup().unwrap();
+        
+        // Verify settings are reflected in metadata
+        assert!(metadata_encrypted.encrypted);
+        assert!(metadata_encrypted.compressed);
+        assert!(!metadata_plain.encrypted);
+        assert!(!metadata_plain.compressed);
+    }
+    
+    #[test]
+    fn test_backup_cleanup_old_backups() {
+        let temp_dir = TempDir::new().unwrap();
+        let store_config = EncryptionConfig::new(vec![1u8; 32], SecurityLevel::Level1);
+        let store = EncryptedStore::new(temp_dir.path().join("store"), store_config).unwrap();
+        
+        let backup_config = BackupConfig {
+            backup_path: temp_dir.path().join("backups").to_path_buf(),
+            max_backups: 3, // Only keep 3 backups
+            ..Default::default()
+        };
+        
+        let mut backup_manager = BackupManager::new(store, backup_config).unwrap();
+        
+        // Create more backups than the limit
+        for i in 0..5 {
+            std::thread::sleep(std::time::Duration::from_millis(10)); // Ensure different timestamps
+            backup_manager.create_full_backup().unwrap();
+        }
+        
+        // Verify cleanup worked - should only have 3 backups
+        let stats = backup_manager.get_backup_stats();
+        assert_eq!(stats.total_backups, 3);
+        assert_eq!(stats.full_backups, 3);
+        
+        // Verify the newest backups are kept
+        let backups = backup_manager.list_backups();
+        assert_eq!(backups.len(), 3);
+        
+        // Timestamps should be in ascending order (oldest first after cleanup)
+        for i in 1..backups.len() {
+            assert!(backups[i].timestamp >= backups[i-1].timestamp);
+        }
+    }
+    
+    #[test]
+    fn test_backup_recovery_integration() {
+        let temp_dir = TempDir::new().unwrap();
+        let store_config = EncryptionConfig::new(vec![1u8; 32], SecurityLevel::Level1);
+        let store = EncryptedStore::new(temp_dir.path().join("store"), store_config).unwrap();
+        
+        let backup_config = BackupConfig {
+            backup_path: temp_dir.path().join("backups").to_path_buf(),
+            encrypted: false, // Disable encryption for simpler testing
+            compressed: false,
+            ..Default::default()
+        };
+        
+        let mut backup_manager = BackupManager::new(store, backup_config).unwrap();
+        
+        // Create a backup
+        let metadata = backup_manager.create_full_backup().unwrap();
+        
+        // Verify the backup file exists
+        let backup_filename = format!("nym_full_backup_{}.bak", metadata.timestamp);
+        let backup_path = temp_dir.path().join("backups").join(backup_filename);
+        assert!(backup_path.exists());
+        
+        // Test recovery options
+        let recovery_options = RecoveryOptions {
+            target_path: temp_dir.path().join("recovery").to_path_buf(),
+            verify_integrity: true,
+            overwrite_existing: true,
+            target_timestamp: Some(metadata.timestamp),
+        };
+        
+        // Verify backup before recovery
+        let verification = backup_manager.verify_backup(&backup_path).unwrap();
+        assert!(verification.valid);
+        assert!(verification.decryptable); // Should be true since encryption is disabled
+        
+        // Test restore functionality
+        let restore_result = backup_manager.restore_from_backup(&backup_path, recovery_options);
+        assert!(restore_result.is_ok());
+    }
+    
+    #[test]
+    fn test_backup_error_handling() {
+        let temp_dir = TempDir::new().unwrap();
+        let store_config = EncryptionConfig::new(vec![1u8; 32], SecurityLevel::Level1);
+        let store = EncryptedStore::new(temp_dir.path().join("store"), store_config).unwrap();
+        
+        // Test with invalid backup path (non-existent directory)
+        let backup_config = BackupConfig {
+            backup_path: PathBuf::from("/invalid/nonexistent/path"),
+            ..Default::default()
+        };
+        
+        let result = BackupManager::new(store, backup_config);
+        assert!(result.is_err());
+        
+        if let Err(StorageError::BackupFailed { reason }) = result {
+            assert!(reason.contains("Failed to create backup directory"));
+        }
+    }
+    
+    #[test]
+    fn test_backup_verification_edge_cases() {
+        let temp_dir = TempDir::new().unwrap();
+        let store_config = EncryptionConfig::new(vec![1u8; 32], SecurityLevel::Level1);
+        let store = EncryptedStore::new(temp_dir.path().join("store"), store_config).unwrap();
+        
+        let backup_config = BackupConfig {
+            backup_path: temp_dir.path().join("backups").to_path_buf(),
+            ..Default::default()
+        };
+        
+        let backup_manager = BackupManager::new(store, backup_config).unwrap();
+        
+        // Test verification of non-existent backup
+        let non_existent_path = temp_dir.path().join("nonexistent.bak");
+        let verification = backup_manager.verify_backup(&non_existent_path).unwrap();
+        assert!(!verification.valid);
+        assert!(verification.errors.contains(&"Backup file does not exist".to_string()));
+        
+        // Create a backup file without metadata
+        let test_backup_path = temp_dir.path().join("backups").join("test_backup.bak");
+        std::fs::write(&test_backup_path, b"test backup content").unwrap();
+        
+        let verification = backup_manager.verify_backup(&test_backup_path).unwrap();
+        assert!(!verification.valid);
+        assert!(verification.errors.iter().any(|e| e.contains("metadata file does not exist")));
+    }
 }

@@ -138,7 +138,7 @@ impl NetworkNode {
         let discovery = NodeDiscovery::new(config.discovery.clone(), config.identity.clone());
         let protocol = NymProtocol::new(config.protocol.clone(), config.identity.clone());
         let router = MessageRouter::new(config.routing.clone(), config.identity.clone());
-        let sync_manager = SyncManager::new(config.sync.clone(), config.identity.clone(), 0, Hash256::default());
+        let sync_manager = SyncManager::new(config.sync.clone(), config.identity.clone(), 0, Hash256::from_bytes([0u8; 32]));
         let message_handler = MessageHandler::new(config.identity.clone());
         
         Self {
