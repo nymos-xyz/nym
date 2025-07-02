@@ -1,0 +1,65 @@
+[package]
+name = "nym-security-audit"
+version = "0.1.0"
+edition = "2021"
+description = "Comprehensive security audit tools and tests for Nym cryptocurrency system"
+
+[dependencies]
+# Core Nym components for security testing
+nym-core = { path = "../nym-core" }
+nym-crypto = { path = "../nym-crypto" }
+nym-storage = { path = "../nym-storage" }
+nym-network = { path = "../nym-network" }
+
+# QuID integration for security validation
+quid = { path = "../../quid" }
+
+# Security testing tools
+tokio = { version = "1.0", features = ["full", "test-util"] }
+rand = "0.8"
+proptest = "1.4"
+quickcheck = "1.0"
+
+# Fuzzing
+arbitrary = { version = "1.3", features = ["derive"] }
+honggfuzz = "0.5"
+
+# Timing attack detection
+criterion = { version = "0.5", features = ["html_reports"] }
+statistical = "1.0"
+
+# Memory safety
+valgrind_request = "1.0"
+
+# Cryptographic analysis
+hex = "0.4"
+constant_time_eq = "0.3"
+
+# System monitoring
+sysinfo = "0.30"
+procfs = "0.16"
+
+# Logging and analysis
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Testing utilities
+tempfile = "3.8"
+anyhow = "1.0"
+
+[[bin]]
+name = "security-audit-runner"
+path = "src/bin/audit_runner.rs"
+
+[[bin]]
+name = "fuzzing-harness"
+path = "src/bin/fuzzing_harness.rs"
+
+[[bench]]
+name = "timing_analysis"
+harness = false
+
+[dev-dependencies]
+tokio-test = "0.4"
