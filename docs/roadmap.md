@@ -43,17 +43,20 @@
   - Stealth address integration
   - Transaction pool management
 
-- [ ] **Week 13-14: Storage Layer**
-  - Encrypted transaction storage
-  - Account chain persistence
-  - Privacy-preserving indices
-  - Backup and recovery mechanisms
+- [x] **Week 13-14: Storage Layer** ✅
+  - Encrypted transaction storage with QuID identity encryption
+  - Account chain persistence with privacy-preserving indices
+  - Privacy-preserving indices (height-based, type-based)
+  - Backup and recovery mechanisms with QuID multi-signature integration
+  - QuID-integrated recovery system with progressive security levels
+  - Comprehensive test suite (34 tests) validating all functionality
 
-- [ ] **Week 15-16: Basic Network Protocol**
-  - Peer-to-peer networking foundation
+- [x] **Week 15-16: Basic Network Protocol** ✅
+  - Peer-to-peer networking foundation (TCP-based implementation)
   - Encrypted communication between nodes
   - Basic transaction propagation
   - Node discovery and connection management
+  - QuID authentication integration for P2P nodes
 
 ### 1.3 Testing and Validation
 
