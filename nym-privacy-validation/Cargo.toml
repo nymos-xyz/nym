@@ -1,0 +1,72 @@
+[package]
+name = "nym-privacy-validation"
+version = "0.1.0"
+edition = "2021"
+description = "Privacy protocol validation and analysis for Nym cryptocurrency system"
+
+[dependencies]
+# Core Nym components
+nym-core = { path = "../nym-core" }
+nym-crypto = { path = "../nym-crypto" }
+nym-storage = { path = "../nym-storage" }
+nym-network = { path = "../nym-network" }
+
+# QuID integration
+quid = { path = "../../quid" }
+
+# Async runtime and futures
+tokio = { version = "1.0", features = ["full", "test-util"] }
+futures = "0.3"
+
+# Cryptographic libraries
+sha3 = "0.10"
+blake3 = "1.4"
+hex = "0.4"
+rand = "0.8"
+
+# Mathematical and statistical analysis
+nalgebra = "0.33"
+statrs = "0.17"
+
+# Graph analysis for anonymity sets
+petgraph = "0.6"
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+bincode = "1.3"
+
+# Zero-knowledge proof libraries (placeholders - would use real zk libraries)
+ark-ff = "0.4"
+ark-ec = "0.4"
+ark-std = "0.4"
+
+# Privacy analysis tools
+differential_privacy = "0.1"
+
+# Logging and tracing
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Error handling
+anyhow = "1.0"
+thiserror = "1.0"
+
+# Testing utilities
+tempfile = "3.8"
+criterion = { version = "0.5", features = ["html_reports"] }
+
+# Time handling
+chrono = { version = "0.4", features = ["serde"] }
+
+[[bin]]
+name = "privacy-validator"
+path = "src/bin/privacy_validator.rs"
+
+[[bin]]
+name = "anonymity-analyzer"
+path = "src/bin/anonymity_analyzer.rs"
+
+[[bench]]
+name = "privacy_analysis"
+harness = false
