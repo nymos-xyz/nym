@@ -1,0 +1,98 @@
+[package]
+name = "nym-compute"
+version = "0.1.0"
+edition = "2021"
+authors = ["Nym Development Team"]
+description = "Decentralized compute platform for Nym blockchain - privacy-first cloud computing"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/nymverse/nym"
+
+[[bin]]
+name = "nym-compute-node"
+path = "src/bin/compute_node.rs"
+
+[[bin]]
+name = "nym-compute-client"
+path = "src/bin/compute_client.rs"
+
+[[bin]]
+name = "nym-compute-scheduler"
+path = "src/bin/compute_scheduler.rs"
+
+[dependencies]
+# Core Nym dependencies
+nym-core = { path = "../nym-core" }
+nym-crypto = { path = "../nym-crypto" }
+nym-network = { path = "../nym-network" }
+nym-storage = { path = "../nym-storage" }
+nym-consensus = { path = "../nym-consensus" }
+quid-core = { path = "../../quid/quid-core" }
+
+# Axon integration for content addressing
+# axon-core = { path = "../../axon/axon-core" }
+
+# Async runtime and concurrency
+tokio = { workspace = true }
+tokio-util = { workspace = true }
+futures = "0.3"
+async-trait = "0.1"
+rayon = "1.8"
+
+# Cryptographic libraries
+sha3 = { workspace = true }
+blake3 = "1.4"
+rand = { workspace = true }
+zeroize = { workspace = true }
+
+# Serialization
+serde = { workspace = true }
+serde_json = { workspace = true }
+bincode = { workspace = true }
+postcard = "1.0"
+
+# Error handling and logging
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+
+# Time handling
+chrono = { workspace = true }
+
+# Data structures and utilities
+dashmap = "5.5"
+lru = "0.12"
+parking_lot = "0.12"
+smallvec = "1.11"
+uuid = { version = "1.6", features = ["v4"] }
+
+# Networking
+libp2p = "0.53"
+quinn = "0.10"
+
+# Container and execution
+bollard = "0.14"  # Docker API
+wasmtime = "15.0"  # WASM runtime
+containerd-client = "0.4"
+
+# Economic and reputation
+bigdecimal = "0.4"
+rust_decimal = "1.33"
+
+# CLI for binaries
+clap = { version = "4.4", features = ["derive"] }
+
+# Testing
+tempfile = "3.8"
+
+[dev-dependencies]
+tokio-test = "0.4"
+test-case = "3.3"
+proptest = { workspace = true }
+
+[features]
+default = ["docker", "wasm"]
+docker = ["bollard"]
+wasm = ["wasmtime"]
+tee = []  # Trusted Execution Environment support
+gpu = []  # GPU compute support
