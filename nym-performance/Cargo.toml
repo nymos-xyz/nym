@@ -92,9 +92,9 @@ rolling_quantiles = "0.10"
 proptest = { workspace = true }
 
 # System monitoring
-prometheus = "0.13"
-metrics = "0.22"
-metrics-exporter-prometheus = "0.13"
+prometheus = { version = "0.13", optional = true }
+metrics = { version = "0.22", optional = true }
+metrics-exporter-prometheus = { version = "0.13", optional = true }
 
 # Networking optimization
 socket2 = "0.5"
@@ -114,7 +114,7 @@ mock_instant = "0.3"
 [features]
 default = ["flamegraph", "metrics"]
 flamegraph = ["pprof/flamegraph"]
-metrics = ["prometheus", "metrics-exporter-prometheus"]
+metrics = ["dep:prometheus", "dep:metrics", "dep:metrics-exporter-prometheus"]
 profiling = ["pprof/profiling"]
 jemalloc = ["tikv-jemalloc-ctl"]
 

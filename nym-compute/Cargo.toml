@@ -71,9 +71,9 @@ libp2p = "0.53"
 quinn = "0.10"
 
 # Container and execution
-bollard = "0.14"  # Docker API
-wasmtime = "15.0"  # WASM runtime
-containerd-client = "0.4"
+bollard = { version = "0.14", optional = true }  # Docker API
+wasmtime = { version = "15.0", optional = true }  # WASM runtime
+containerd-client = { version = "0.4", optional = true }
 
 # Economic and reputation
 bigdecimal = "0.4"
@@ -92,7 +92,7 @@ proptest = { workspace = true }
 
 [features]
 default = ["docker", "wasm"]
-docker = ["bollard"]
-wasm = ["wasmtime"]
+docker = ["dep:bollard", "dep:containerd-client"]
+wasm = ["dep:wasmtime"]
 tee = []  # Trusted Execution Environment support
 gpu = []  # GPU compute support

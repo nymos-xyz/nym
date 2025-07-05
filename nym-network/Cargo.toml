@@ -26,19 +26,19 @@ hex = "0.4"
 rand = "0.8"
 tracing = "0.1"
 
-# Networking protocols (libp2p temporarily removed for compilation)
-# libp2p = { version = "0.52", default-features = false, features = [
-#     "tcp",
-#     "dns", 
-#     "noise",
-#     "yamux",
-#     "gossipsub",
-#     "kad",
-#     "identify",
-#     "ping",
-#     "macros",
-#     "tokio"
-# ] }
+# Networking protocols
+libp2p = { version = "0.53", default-features = false, features = [
+    "tcp",
+    "dns", 
+    "noise",
+    "yamux",
+    "gossipsub",
+    "kad",
+    "identify",
+    "ping",
+    "macros",
+    "tokio"
+] }
 
 [dev-dependencies]
 tempfile = "3.0"

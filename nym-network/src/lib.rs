@@ -16,6 +16,9 @@ pub mod sync;
 pub mod node;
 pub mod message;
 pub mod p2p_simple;
+pub mod libp2p_network;
+pub mod quid_auth;
+pub mod privacy_routing;
 pub mod integration;
 
 pub use error::{NetworkError, NetworkResult};
@@ -30,4 +33,16 @@ pub use message::{
     DiscoveryPayload, PeerInfoPayload, PrivacyRoutedPayload, MessageBuilder, MessageHandler
 };
 pub use p2p_simple::{SimpleP2PNetwork, SimpleP2PConfig, SimpleP2PEvent};
+pub use libp2p_network::{
+    Libp2pNetwork, Libp2pNetworkConfig, Libp2pNetworkEvent, 
+    NymNetworkBehaviour, NymNetworkEvent, create_libp2p_network
+};
+pub use quid_auth::{
+    QuIDAuthenticator, QuIDAuthConfig, AuthChallenge, AuthResponse, 
+    AuthStatus, AuthenticatedPeer, AuthMessage, AuthStatistics, create_quid_authenticator
+};
+pub use privacy_routing::{
+    PrivacyRouter, PrivacyRoutingConfig, OnionMessage, OnionLayer, RouteHop, 
+    PrivacyRoute, MixNode, MixStrategy, RoutingStatistics, create_privacy_router
+};
 pub use integration::{EnhancedNetworkNode, EnhancedNodeConfig, create_enhanced_config};
