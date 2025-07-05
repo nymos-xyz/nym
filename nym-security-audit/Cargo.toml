@@ -12,7 +12,7 @@ nym-storage = { path = "../nym-storage" }
 nym-network = { path = "../nym-network" }
 
 # QuID integration for security validation
-quid = { path = "../../quid" }
+quid-core = { path = "../../quid/quid-core" }
 
 # Security testing tools
 tokio = { version = "1.0", features = ["full", "test-util"] }
@@ -49,13 +49,19 @@ serde_json = "1.0"
 tempfile = "3.8"
 anyhow = "1.0"
 
+# CLI and reporting
+clap = { version = "4.4", features = ["derive"] }
+chrono = { version = "0.4", features = ["serde"] }
+blake3 = "1.4"
+
 [[bin]]
-name = "security-audit-runner"
+name = "audit-runner"
 path = "src/bin/audit_runner.rs"
 
 [[bin]]
 name = "fuzzing-harness"
 path = "src/bin/fuzzing_harness.rs"
+
 
 [[bench]]
 name = "timing_analysis"

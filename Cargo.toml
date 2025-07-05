@@ -16,6 +16,9 @@ members = [
     "nym-storage",
     "nym-cli",
     "nym-node",
+    "nym-security-audit",
+    "nym-privacy-validation",
+    "nym-performance",
 ]
 
 [workspace.dependencies]
@@ -55,7 +58,7 @@ chrono = { version = "0.4", features = ["serde"] }
 
 [dependencies]
 # QuID dependency - Nym uses QuID for authentication
-quid = { path = "../quid" }
+quid-core = { path = "../quid/quid-core" }
 
 # Core Nym components
 nym-core = { path = "nym-core" }
@@ -65,6 +68,9 @@ nym-network = { path = "nym-network" }
 nym-storage = { path = "nym-storage" }
 nym-cli = { path = "nym-cli" }
 nym-node = { path = "nym-node" }
+nym-security-audit = { path = "nym-security-audit" }
+nym-privacy-validation = { path = "nym-privacy-validation" }
+nym-performance = { path = "nym-performance" }
 
 tokio = { workspace = true }
 tracing = { workspace = true }

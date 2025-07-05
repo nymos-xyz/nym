@@ -12,7 +12,7 @@ nym-storage = { path = "../nym-storage" }
 nym-network = { path = "../nym-network" }
 
 # QuID integration
-quid = { path = "../../quid" }
+quid-core = { path = "../../quid/quid-core" }
 
 # Async runtime and futures
 tokio = { version = "1.0", features = ["full", "test-util"] }
@@ -59,14 +59,13 @@ criterion = { version = "0.5", features = ["html_reports"] }
 # Time handling
 chrono = { version = "0.4", features = ["serde"] }
 
+# CLI dependencies
+clap = { version = "4.4", features = ["derive"] }
+serde_yaml = "0.9"
+
 [[bin]]
 name = "privacy-validator"
 path = "src/bin/privacy_validator.rs"
 
-[[bin]]
-name = "anonymity-analyzer"
-path = "src/bin/anonymity_analyzer.rs"
 
-[[bench]]
-name = "privacy_analysis"
-harness = false
+

@@ -7,8 +7,8 @@ description = "Core data structures and types for Nym with QuID integration"
 [dependencies]
 nym-crypto = { path = "../nym-crypto" }
 
-# QuID integration (will integrate with actual QuID crate)
-# quid-core = { path = "../../../quid/quid-core" }
+# QuID integration
+quid-core = { path = "../../quid/quid-core" }
 
 # Serialization
 serde = { workspace = true }

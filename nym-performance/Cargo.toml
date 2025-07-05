@@ -1,0 +1,125 @@
+[package]
+name = "nym-performance"
+version = "0.1.0"
+edition = "2021"
+authors = ["Nym Development Team"]
+description = "Performance optimization and monitoring for Nym blockchain"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/nymverse/nym"
+
+[[bin]]
+name = "perf-optimizer"
+path = "src/bin/perf_optimizer.rs"
+
+[[bin]]
+name = "benchmark-runner"
+path = "src/bin/benchmark_runner.rs"
+
+[[bin]]
+name = "memory-profiler"
+path = "src/bin/memory_profiler.rs"
+
+[[bin]]
+name = "network-optimizer"
+path = "src/bin/network_optimizer.rs"
+
+[[bin]]
+name = "perf-monitor"
+path = "src/bin/perf_monitor.rs"
+
+[dependencies]
+# Core Nym dependencies
+nym-core = { path = "../nym-core" }
+nym-crypto = { path = "../nym-crypto" }
+nym-network = { path = "../nym-network" }
+nym-storage = { path = "../nym-storage" }
+quid-core = { path = "../../quid/quid-core" }
+
+# Async and concurrency
+tokio = { workspace = true }
+tokio-util = { workspace = true }
+rayon = "1.8"
+crossbeam-channel = "0.5"
+crossbeam-utils = "0.8"
+futures = "0.3"
+async-trait = "0.1"
+
+# Performance monitoring
+criterion = { version = "0.5", features = ["html_reports"] }
+pprof = { version = "0.13", features = ["criterion", "flamegraph"] }
+perf-event = "0.4"
+sysinfo = "0.30"
+procfs = "0.16"
+libc = "0.2"
+
+# Memory management
+bumpalo = "3.14"
+slotmap = "1.0"
+lru = "0.12"
+parking_lot = "0.12"
+
+# Compression and optimization
+lz4_flex = "0.11"
+zstd = "0.13"
+flate2 = "1.0"
+
+# Data structures
+dashmap = "5.5"
+smallvec = "1.11"
+ahash = "0.8"
+fxhash = "0.2"
+
+# Serialization
+serde = { workspace = true }
+serde_json = { workspace = true }
+bincode = { workspace = true }
+postcard = "1.0"
+
+# Error handling and logging
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+tracing-flame = "0.2"
+tracing-appender = "0.2"
+
+# Time and statistics
+chrono = { workspace = true }
+hdrhistogram = "7.5"
+rolling_quantiles = "0.10"
+
+# Testing
+proptest = { workspace = true }
+
+# System monitoring
+prometheus = "0.13"
+metrics = "0.22"
+metrics-exporter-prometheus = "0.13"
+
+# Networking optimization
+socket2 = "0.5"
+mio = "0.8"
+
+# Math and algorithms
+approx = "0.5"
+num-traits = "0.2"
+ordered-float = "4.2"
+
+[dev-dependencies]
+tempfile = "3.8"
+test-case = "3.3"
+rstest = "0.18"
+mock_instant = "0.3"
+
+[features]
+default = ["flamegraph", "metrics"]
+flamegraph = ["pprof/flamegraph"]
+metrics = ["prometheus", "metrics-exporter-prometheus"]
+profiling = ["pprof/profiling"]
+jemalloc = ["tikv-jemalloc-ctl"]
+
+[build-dependencies]
+cc = "1.0"
+
+[target.'cfg(not(target_env = "msvc"))'.dependencies]
+tikv-jemalloc-ctl = { version = "0.5", optional = true }
