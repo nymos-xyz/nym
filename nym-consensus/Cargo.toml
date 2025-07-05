@@ -2,6 +2,60 @@
 name = "nym-consensus"
 version = "0.1.0"
 edition = "2021"
-description = "Placeholder for nym-consensus"
+authors = ["Nym Development Team"]
+description = "Hybrid PoW/PoS consensus mechanism for Nym blockchain with quantum resistance"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/nymverse/nym"
 
 [dependencies]
+# Core Nym dependencies
+nym-core = { path = "../nym-core" }
+nym-crypto = { path = "../nym-crypto" }
+nym-network = { path = "../nym-network" }
+nym-storage = { path = "../nym-storage" }
+quid-core = { path = "../../quid/quid-core" }
+
+# Async runtime
+tokio = { workspace = true }
+tokio-util = { workspace = true }
+futures = "0.3"
+async-trait = "0.1"
+
+# Cryptographic libraries
+sha3 = { workspace = true }
+blake3 = "1.4"
+rand = { workspace = true }
+randomx = "0.4"
+
+# Serialization
+serde = { workspace = true }
+serde_json = { workspace = true }
+bincode = { workspace = true }
+
+# Error handling and logging
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+
+# Time handling
+chrono = { workspace = true }
+
+# Data structures
+dashmap = "5.5"
+parking_lot = "0.12"
+uuid = { version = "1.6", features = ["v4"] }
+
+# Numerical operations
+bigdecimal = "0.4"
+num-bigint = "0.4"
+num-traits = "0.2"
+
+[dev-dependencies]
+tempfile = "3.8"
+tokio-test = "0.4"
+test-case = "3.3"
+
+[features]
+default = ["quantum-resistant"]
+quantum-resistant = []
+mining-benchmarks = []
