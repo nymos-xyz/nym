@@ -22,7 +22,6 @@ members = [
     "nym-compute",
     "nym-economics",
     "nym-transparency",
-    "nym-lang",
 ]
 
 [workspace.dependencies]
@@ -82,7 +81,6 @@ nym-performance = { path = "nym-performance" }
 nym-compute = { path = "nym-compute" }
 nym-economics = { path = "nym-economics" }
 nym-transparency = { path = "nym-transparency" }
-nym-lang = { path = "nym-lang" }
 
 tokio = { workspace = true }
 tracing = { workspace = true }
