@@ -6,12 +6,16 @@
 //! - Encrypted memory management
 //! - Zero-knowledge proof generation
 //! - Gas metering for privacy operations
+//! - VM Security and Optimization
 
 pub mod error;
 pub mod ppvm;
 pub mod core_vm;
 pub mod crypto_instructions;
 pub mod integrated_vm;
+pub mod security;
+pub mod optimization;
+pub mod secure_vm;
 
 pub use error::{VMError, VMResult};
 pub use ppvm::{
@@ -31,4 +35,16 @@ pub use crypto_instructions::{
 pub use integrated_vm::{
     IntegratedVM, IntegratedVMConfig, IntegratedExecutionResult, IntegratedVMMetrics,
     IntegratedVMStats, ExecutionTrace, PerformanceMetrics
+};
+pub use security::{
+    SecurityManager, SandboxConfig, ResourceLimits, SecurityPolicies, SecurityMonitor,
+    SecurityViolation, SecurityMetrics, IsolationContext, MemoryOperation
+};
+pub use optimization::{
+    OptimizationEngine, OptimizationConfig, OptimizationMetrics, OptimizationOpportunity,
+    InstructionCache, MemoryOptimizer, GasOptimizer, CryptoOptimizer, ExecutionProfiler
+};
+pub use secure_vm::{
+    SecureVM, SecureVMConfig, SecureVMMetrics, SecureExecutionResult, VulnerabilityScanResult,
+    ExecutionAuditTrail, SecurityStatus, SecureVMReport
 };
