@@ -25,6 +25,7 @@ pub mod crypto_stdlib;
 pub mod privacy_utils;
 pub mod contract_deployment;
 pub mod execution_environment;
+pub mod storage_optimization;
 
 pub use ast::{
     NymScriptAST, Statement, Expression, Declaration, Function, Contract,
