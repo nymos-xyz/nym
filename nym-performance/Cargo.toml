@@ -86,7 +86,7 @@ tracing-appender = "0.2"
 # Time and statistics
 chrono = { workspace = true }
 hdrhistogram = "7.5"
-rolling_quantiles = "0.10"
+# rolling_quantiles = "0.10"  # Package not found on crates.io
 
 # Testing
 proptest = { workspace = true }
@@ -115,7 +115,7 @@ mock_instant = "0.3"
 default = ["flamegraph", "metrics"]
 flamegraph = ["pprof/flamegraph"]
 metrics = ["dep:prometheus", "dep:metrics", "dep:metrics-exporter-prometheus"]
-profiling = ["pprof/profiling"]
+# profiling = ["pprof/profiling"]  # pprof doesn't have this feature
 jemalloc = ["tikv-jemalloc-ctl"]
 
 [build-dependencies]

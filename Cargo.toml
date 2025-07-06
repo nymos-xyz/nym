@@ -22,6 +22,7 @@ members = [
     "nym-compute",
     "nym-economics",
     "nym-transparency",
+    "nym-lang",
 ]
 
 [workspace.dependencies]
@@ -60,6 +61,9 @@ rocksdb = "0.21"
 # Time
 chrono = { version = "0.4", features = ["serde"] }
 
+# UUID generation
+uuid = { version = "1.0", features = ["v4", "serde"] }
+
 [dependencies]
 # QuID dependency - Nym uses QuID for authentication
 quid-core = { path = "../quid/quid-core" }
@@ -78,6 +82,7 @@ nym-performance = { path = "nym-performance" }
 nym-compute = { path = "nym-compute" }
 nym-economics = { path = "nym-economics" }
 nym-transparency = { path = "nym-transparency" }
+nym-lang = { path = "nym-lang" }
 
 tokio = { workspace = true }
 tracing = { workspace = true }

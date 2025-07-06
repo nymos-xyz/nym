@@ -42,7 +42,7 @@ ark-ec = "0.4"
 ark-std = "0.4"
 
 # Privacy analysis tools
-differential_privacy = "0.1"
+# differential_privacy = "0.1"  # Would use a real differential privacy library
 
 # Logging and tracing
 tracing = "0.1"
