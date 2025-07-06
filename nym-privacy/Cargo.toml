@@ -1,0 +1,25 @@
+[package]
+name = "nym-privacy"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+nym-core = { path = "../nym-core" }
+nym-crypto = { path = "../nym-crypto" }
+
+# Async runtime
+tokio = { version = "1.0", features = ["full"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+bincode = "1.3"
+
+# Cryptography
+sha3 = "0.10"
+zeroize = { version = "1.5", features = ["serde"] }
+
+# Logging
+tracing = "0.1"
+
+[dev-dependencies]
+tokio-test = "0.4"

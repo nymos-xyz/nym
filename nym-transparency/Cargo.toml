@@ -1,0 +1,37 @@
+[package]
+name = "nym-transparency"
+version = "0.1.0"
+edition = "2021"
+description = "Transparency and compliance tools for Nym blockchain"
+
+[dependencies]
+# Serialization
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# Cryptography
+sha3 = { workspace = true }
+hex = { workspace = true }
+
+# Random number generation  
+rand = { workspace = true }
+
+# Async runtime
+tokio = { workspace = true }
+
+# Error handling
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+
+[dev-dependencies]
+# Testing
+proptest = { workspace = true }
+
+[features]
+default = []
+# Enable real zk-STARK implementations (placeholder)
+zk-stark = []
+# Enable hardware security module support
+hsm = []
+# Enable advanced privacy features
+advanced-privacy = []

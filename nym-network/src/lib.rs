@@ -20,6 +20,9 @@ pub mod libp2p_network;
 pub mod quid_auth;
 pub mod privacy_routing;
 pub mod integration;
+pub mod reputation;
+pub mod node_registry;
+pub mod security;
 
 pub use error::{NetworkError, NetworkResult};
 pub use peer::{PeerId, PeerInfo, PeerManager};
@@ -46,3 +49,6 @@ pub use privacy_routing::{
     PrivacyRoute, MixNode, MixStrategy, RoutingStatistics, create_privacy_router
 };
 pub use integration::{EnhancedNetworkNode, EnhancedNodeConfig, create_enhanced_config};
+pub use reputation::{ReputationScore, ReputationManager, ReputationConfig};
+pub use node_registry::{NodeRecord, NodeRegistry, NodeStatus};
+pub use security::{NetworkSecurityManager, SecurityConfig, SecurityAlert, ThreatType, SecurityStats};

@@ -35,7 +35,7 @@ pub enum PowAlgorithm {
 impl Default for PowConfig {
     fn default() -> Self {
         Self {
-            algorithm: PowAlgorithm::RandomXNym,
+            algorithm: PowAlgorithm::Sha3Keccak,
             target_block_time: Duration::from_secs(120), // 2 minutes
             difficulty_adjustment_period: 1440, // ~2 days of blocks
             min_difficulty: 1_000_000,
