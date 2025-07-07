@@ -24,6 +24,7 @@ pub mod reputation;
 pub mod node_registry;
 pub mod security;
 pub mod network_security;
+pub mod performance_optimizer;
 
 pub use error::{NetworkError, NetworkResult};
 pub use peer::{PeerId, PeerInfo, PeerManager};
@@ -56,4 +57,8 @@ pub use security::{NetworkSecurityManager, SecurityConfig, SecurityAlert, Threat
 pub use network_security::{
     NetworkSecurityManager as AdvancedSecurityManager, SecurityConfig as AdvancedSecurityConfig,
     SecurityMetrics, SecurityAlert as AdvancedSecurityAlert, AlertType, AlertSeverity
+};
+pub use performance_optimizer::{
+    NetworkPerformanceOptimizer, PerformanceConfig, ResourceAllocationStrategy,
+    CurrentPerformanceMetrics, PerformancePrediction, OptimizationResult
 };

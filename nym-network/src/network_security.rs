@@ -45,6 +45,18 @@ pub struct SecurityConfig {
     pub enable_reputation_scoring: bool,
     /// Minimum reputation score for acceptance
     pub min_reputation_score: f64,
+    /// Performance optimization settings
+    pub enable_adaptive_limits: bool,
+    /// Network congestion threshold (0.0-1.0)
+    pub congestion_threshold: f64,
+    /// Dynamic rate limit multiplier during congestion
+    pub congestion_rate_multiplier: f64,
+    /// Enable advanced DoS protection
+    pub enable_advanced_dos_protection: bool,
+    /// Maximum message size in bytes
+    pub max_message_size: usize,
+    /// Maximum messages per second per peer
+    pub max_messages_per_second: u32,
 }
 
 impl Default for SecurityConfig {
@@ -59,6 +71,12 @@ impl Default for SecurityConfig {
             ban_duration_seconds: 3600, // 1 hour
             enable_reputation_scoring: true,
             min_reputation_score: 0.3,
+            enable_adaptive_limits: true,
+            congestion_threshold: 0.8,
+            congestion_rate_multiplier: 0.5,
+            enable_advanced_dos_protection: true,
+            max_message_size: 1024 * 1024, // 1MB
+            max_messages_per_second: 100,
         }
     }
 }

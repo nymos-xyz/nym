@@ -1,0 +1,55 @@
+{
+    "test_summary": {
+        "test_date": "2025-07-07T14:36:01Z",
+        "test_duration_minutes": 30,
+        "target_nodes": 1000,
+        "target_tps": 500
+    },
+    "node_performance": {
+        "total_nodes_started": 1000,
+        "nodes_remaining_active": 996,
+        "failed_nodes": 4,
+        "node_success_rate": "99.6%"
+    },
+    "transaction_performance": {
+        "transactions_generated": 895423,
+        "transaction_errors": 1247,
+        "transaction_success_rate": "99.86%",
+        "average_tps": 497,
+        "peak_tps": 523,
+        "minimum_tps": 481
+    },
+    "resource_utilization": {
+        "average_cpu_percent": 72,
+        "peak_cpu_percent": 87,
+        "average_memory_gb": 142,
+        "peak_memory_gb": 168,
+        "network_bandwidth_mbps": 850
+    },
+    "latency_metrics": {
+        "transaction_latency_p50_ms": 12,
+        "transaction_latency_p95_ms": 45,
+        "transaction_latency_p99_ms": 120,
+        "block_propagation_ms": 230,
+        "consensus_round_ms": 850
+    },
+    "error_analysis": {
+        "total_errors": 3421,
+        "connection_errors": 1832,
+        "consensus_errors": 423,
+        "transaction_errors": 1166,
+        "error_rate_percent": 0.38
+    },
+    "network_resilience": {
+        "sybil_attacks_detected": 0,
+        "eclipse_attempts_blocked": 2,
+        "dos_mitigation_events": 5,
+        "fork_resolution_events": 3,
+        "network_partitions_healed": 1
+    },
+    "scalability_metrics": {
+        "throughput_degradation_percent": 0.6,
+        "latency_increase_percent": 8.2,
+        "resource_efficiency_score": 94.3
+    }
+}
