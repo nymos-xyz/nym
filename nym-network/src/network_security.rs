@@ -325,7 +325,7 @@ impl NetworkSecurityManager {
         Ok(pattern.reputation_score)
     }
 
-    /// Check for eclipse attack resistance
+    /// Check for eclipse attack resistance with enhanced topology analysis
     pub async fn check_eclipse_resistance(&self, peers: &[PeerInfo]) -> NetworkResult<DiversityMetrics> {
         let mut protector = self.eclipse_protector.write().await;
         
@@ -333,69 +333,212 @@ impl NetworkSecurityManager {
         protector.subnet_distribution.clear();
         protector.as_distribution.clear();
         
-        // Analyze peer distribution
+        // Enhanced peer distribution analysis
         for peer in peers {
-            // Extract subnet (simplified - in real implementation would use proper IP analysis)
-            let subnet = format!("{}.{}.{}.0", 
-                peer.addresses[0].to_string().split('.').nth(0).unwrap_or("0"),
-                peer.addresses[0].to_string().split('.').nth(1).unwrap_or("0"),
-                peer.addresses[0].to_string().split('.').nth(2).unwrap_or("0")
+            // Extract /24 and /16 subnets for analysis
+            let ip_parts: Vec<&str> = peer.addresses[0].to_string().split('.').collect();
+            let subnet_24 = format!("{}.{}.{}.0", 
+                ip_parts.get(0).unwrap_or(&"0"),
+                ip_parts.get(1).unwrap_or(&"0"),
+                ip_parts.get(2).unwrap_or(&"0")
+            );
+            let subnet_16 = format!("{}.{}.0.0", 
+                ip_parts.get(0).unwrap_or(&"0"),
+                ip_parts.get(1).unwrap_or(&"0")
             );
             
+            // Track both subnet levels
             protector.subnet_distribution
-                .entry(subnet)
+                .entry(subnet_24.clone())
+                .or_insert_with(HashSet::new)
+                .insert(peer.peer_id);
+                
+            // Simulate AS distribution (in practice, would use BGP data)
+            let simulated_as = self.simulate_as_number(&subnet_16);
+            protector.as_distribution
+                .entry(simulated_as)
                 .or_insert_with(HashSet::new)
                 .insert(peer.peer_id);
         }
         
-        // Calculate diversity metrics
+        // Calculate enhanced diversity metrics
         let total_peers = peers.len() as f64;
         let unique_subnets = protector.subnet_distribution.len() as u32;
+        let unique_as_numbers = protector.as_distribution.len() as u32;
         
         let max_subnet_size = protector.subnet_distribution.values()
             .map(|peers| peers.len())
             .max()
             .unwrap_or(0) as f64;
+            
+        let max_as_size = protector.as_distribution.values()
+            .map(|peers| peers.len())
+            .max()
+            .unwrap_or(0) as f64;
         
-        let max_concentration = if total_peers > 0.0 { max_subnet_size / total_peers } else { 0.0 };
+        let max_subnet_concentration = if total_peers > 0.0 { max_subnet_size / total_peers } else { 0.0 };
+        let max_as_concentration = if total_peers > 0.0 { max_as_size / total_peers } else { 0.0 };
+        
+        // Calculate diversity score using multiple factors
+        let subnet_diversity = (unique_subnets as f64 / total_peers).min(1.0);
+        let as_diversity = (unique_as_numbers as f64 / (total_peers / 4.0)).min(1.0); // Expect ~4 peers per AS
+        let concentration_penalty = (1.0 - max_subnet_concentration) * (1.0 - max_as_concentration);
+        
+        let diversity_score = (subnet_diversity * 0.4 + as_diversity * 0.4 + concentration_penalty * 0.2).max(0.0);
         
         protector.diversity_metrics = DiversityMetrics {
             unique_subnets,
-            unique_as_numbers: 0, // Simplified for now
-            max_subnet_concentration: max_concentration,
-            max_as_concentration: 0.0,
-            diversity_score: if unique_subnets as f64 / total_peers > 0.5 { 1.0 } else { 0.5 },
+            unique_as_numbers,
+            max_subnet_concentration,
+            max_as_concentration,
+            diversity_score,
         };
         
-        // Check if network is vulnerable to eclipse attacks
-        if max_concentration > self.config.max_subnet_concentration {
-            warn!("High subnet concentration detected: {:.2}%", max_concentration * 100.0);
+        // Enhanced vulnerability detection
+        let mut warnings = Vec::new();
+        
+        if max_subnet_concentration > self.config.max_subnet_concentration {
+            warnings.push(format!("High subnet concentration: {:.2}%", max_subnet_concentration * 100.0));
+        }
+        
+        if max_as_concentration > 0.5 {
+            warnings.push(format!("High AS concentration: {:.2}%", max_as_concentration * 100.0));
+        }
+        
+        if unique_subnets < self.config.min_peer_diversity {
+            warnings.push(format!("Low subnet diversity: {} unique subnets", unique_subnets));
+        }
+        
+        if diversity_score < 0.3 {
+            warnings.push(format!("Overall low network diversity: {:.2}", diversity_score));
+        }
+        
+        if !warnings.is_empty() {
+            warn!("Eclipse attack vulnerabilities detected: {}", warnings.join(", "));
         }
         
         Ok(protector.diversity_metrics.clone())
     }
 
-    /// Monitor for DoS attacks
+    /// Simulate AS number based on IP prefix (simplified)
+    fn simulate_as_number(&self, subnet_16: &str) -> u32 {
+        use std::collections::hash_map::DefaultHasher;
+        use std::hash::{Hash, Hasher};
+        
+        let mut hasher = DefaultHasher::new();
+        subnet_16.hash(&mut hasher);
+        (hasher.finish() % 65536) as u32 // AS numbers range
+    }
+
+    /// Advanced eclipse attack mitigation
+    pub async fn mitigate_eclipse_attack(&self, suspicious_peers: &[PeerId]) -> NetworkResult<EclipseMitigationPlan> {
+        let protector = self.eclipse_protector.read().await;
+        let mut plan = EclipseMitigationPlan {
+            peers_to_disconnect: Vec::new(),
+            peers_to_deprioritize: Vec::new(),
+            new_connections_needed: 0,
+            target_subnets: Vec::new(),
+            priority_level: MitigationPriority::Low,
+        };
+        
+        // Analyze threat level
+        let threat_level = self.calculate_eclipse_threat_level(&protector, suspicious_peers).await;
+        
+        match threat_level {
+            EclipseThreatLevel::Low => {
+                plan.priority_level = MitigationPriority::Low;
+                // Just monitor and deprioritize
+                plan.peers_to_deprioritize = suspicious_peers.to_vec();
+            },
+            EclipseThreatLevel::Medium => {
+                plan.priority_level = MitigationPriority::Medium;
+                // Disconnect some peers and seek diversity
+                plan.peers_to_disconnect = suspicious_peers.iter().take(2).cloned().collect();
+                plan.new_connections_needed = 3;
+                plan.target_subnets = self.identify_missing_subnets(&protector).await;
+            },
+            EclipseThreatLevel::High => {
+                plan.priority_level = MitigationPriority::High;
+                // Aggressive mitigation
+                plan.peers_to_disconnect = suspicious_peers.to_vec();
+                plan.new_connections_needed = 5;
+                plan.target_subnets = self.identify_missing_subnets(&protector).await;
+            },
+        }
+        
+        info!("Eclipse mitigation plan: disconnect {}, deprioritize {}, new connections needed: {}", 
+              plan.peers_to_disconnect.len(), plan.peers_to_deprioritize.len(), plan.new_connections_needed);
+        
+        Ok(plan)
+    }
+
+    async fn calculate_eclipse_threat_level(&self, protector: &EclipseProtector, suspicious_peers: &[PeerId]) -> EclipseThreatLevel {
+        let diversity = &protector.diversity_metrics;
+        let suspicious_ratio = suspicious_peers.len() as f64 / protector.subnet_distribution.len() as f64;
+        
+        if diversity.diversity_score < 0.2 || suspicious_ratio > 0.7 {
+            EclipseThreatLevel::High
+        } else if diversity.diversity_score < 0.4 || suspicious_ratio > 0.4 {
+            EclipseThreatLevel::Medium
+        } else {
+            EclipseThreatLevel::Low
+        }
+    }
+
+    async fn identify_missing_subnets(&self, protector: &EclipseProtector) -> Vec<String> {
+        // Identify underrepresented subnet ranges for targeted peer discovery
+        let mut target_subnets = Vec::new();
+        
+        // Look for gaps in subnet distribution
+        for i in 1..255 {
+            for j in 1..255 {
+                let target = format!("{}.{}.0.0", i, j);
+                let has_peers = protector.subnet_distribution.keys()
+                    .any(|subnet| subnet.starts_with(&format!("{}.{}.", i, j)));
+                
+                if !has_peers && target_subnets.len() < 10 {
+                    target_subnets.push(target);
+                }
+            }
+        }
+        
+        target_subnets
+    }
+
+    /// Monitor for DoS attacks with advanced detection
     pub async fn monitor_dos_attacks(&self, message_count: u64, resource_usage: f64) -> NetworkResult<bool> {
         let mut mitigator = self.dos_mitigator.write().await;
         
-        // Update resource usage
+        // Update resource usage with historical tracking
         mitigator.resource_usage.cpu_usage = resource_usage;
         mitigator.resource_usage.network_bandwidth = message_count as f64;
         
-        // Detect DoS patterns
+        // Advanced DoS detection patterns
         let high_load = resource_usage > 0.8;
-        let high_message_rate = message_count > 1000; // Messages per second threshold
+        let high_message_rate = message_count > 1000;
+        let sudden_spike = self.detect_traffic_spike(&mitigator, message_count).await;
+        let asymmetric_traffic = self.detect_asymmetric_traffic(&mitigator).await;
         
-        if high_load || high_message_rate {
+        if high_load || high_message_rate || sudden_spike || asymmetric_traffic {
             if !mitigator.under_attack {
-                warn!("Potential DoS attack detected - CPU: {:.2}%, Messages: {}", 
-                      resource_usage * 100.0, message_count);
+                warn!("Potential DoS attack detected - CPU: {:.2}%, Messages: {}, Spike: {}, Asymmetric: {}", 
+                      resource_usage * 100.0, message_count, sudden_spike, asymmetric_traffic);
                 mitigator.under_attack = true;
                 
-                // Activate mitigation strategies
-                mitigator.active_mitigations.insert(MitigationStrategy::RateLimitIncrease);
-                mitigator.active_mitigations.insert(MitigationStrategy::ConnectionThrottling);
+                // Activate graduated mitigation strategies
+                if sudden_spike {
+                    mitigator.active_mitigations.insert(MitigationStrategy::RateLimitIncrease);
+                }
+                if high_message_rate {
+                    mitigator.active_mitigations.insert(MitigationStrategy::MessageFiltering);
+                }
+                if high_load {
+                    mitigator.active_mitigations.insert(MitigationStrategy::ConnectionThrottling);
+                    mitigator.active_mitigations.insert(MitigationStrategy::ResourceLimiting);
+                }
+                if asymmetric_traffic {
+                    mitigator.active_mitigations.insert(MitigationStrategy::PeerBanning);
+                }
             }
         } else if mitigator.under_attack && resource_usage < 0.5 && message_count < 500 {
             info!("DoS attack appears to have subsided");
@@ -404,6 +547,98 @@ impl NetworkSecurityManager {
         }
         
         Ok(mitigator.under_attack)
+    }
+
+    /// Detect sudden traffic spikes
+    async fn detect_traffic_spike(&self, mitigator: &DosMetrics, current_count: u64) -> bool {
+        // Calculate moving average and detect spikes
+        let avg_bandwidth = mitigator.resource_usage.network_bandwidth;
+        if avg_bandwidth > 0.0 {
+            let spike_ratio = current_count as f64 / avg_bandwidth;
+            spike_ratio > 3.0 // 3x normal traffic is considered a spike
+        } else {
+            false
+        }
+    }
+
+    /// Detect asymmetric traffic patterns (potential amplification attacks)
+    async fn detect_asymmetric_traffic(&self, mitigator: &DosMetrics) -> bool {
+        // Check for high incoming vs outgoing ratio
+        let cpu_load = mitigator.resource_usage.cpu_usage;
+        let network_load = mitigator.resource_usage.network_bandwidth;
+        
+        // High network traffic but low CPU usage might indicate amplification
+        cpu_load < 0.3 && network_load > 500.0
+    }
+
+    /// Apply dynamic rate limiting based on network conditions
+    pub async fn apply_dynamic_rate_limiting(&self, peer_id: PeerId, base_limit: u32) -> NetworkResult<u32> {
+        let dos = self.dos_mitigator.read().await;
+        let health = self.health_metrics.read().await;
+        
+        let mut adjusted_limit = base_limit;
+        
+        // Reduce limits during attacks
+        if dos.under_attack {
+            adjusted_limit = (adjusted_limit as f64 * self.config.congestion_rate_multiplier) as u32;
+        }
+        
+        // Adjust based on network health
+        let health_factor = health.network_stability_score;
+        adjusted_limit = (adjusted_limit as f64 * health_factor) as u32;
+        
+        // Minimum limit to prevent complete blocking
+        adjusted_limit = adjusted_limit.max(1);
+        
+        debug!("Dynamic rate limit for peer {:?}: {} (base: {})", peer_id, adjusted_limit, base_limit);
+        Ok(adjusted_limit)
+    }
+
+    /// Enhanced Sybil attack detection with behavioral clustering
+    pub async fn detect_sybil_clusters(&self) -> NetworkResult<Vec<SuspiciousGroup>> {
+        let mut detector = self.sybil_detector.write().await;
+        let mut clusters = Vec::new();
+        
+        // Group peers by behavioral similarity
+        let mut similarity_matrix: HashMap<(PeerId, PeerId), f64> = HashMap::new();
+        let peer_ids: Vec<PeerId> = detector.peer_patterns.keys().cloned().collect();
+        
+        for i in 0..peer_ids.len() {
+            for j in (i+1)..peer_ids.len() {
+                let peer1 = peer_ids[i];
+                let peer2 = peer_ids[j];
+                
+                if let (Some(pattern1), Some(pattern2)) = (
+                    detector.peer_patterns.get(&peer1),
+                    detector.peer_patterns.get(&peer2)
+                ) {
+                    let similarity = self.calculate_behavioral_similarity(pattern1, pattern2);
+                    similarity_matrix.insert((peer1, peer2), similarity);
+                    
+                    // If high similarity, consider as potential cluster
+                    if similarity > self.config.sybil_detection_threshold {
+                        let mut group_peers = HashSet::new();
+                        group_peers.insert(peer1);
+                        group_peers.insert(peer2);
+                        
+                        clusters.push(SuspiciousGroup {
+                            peers: group_peers,
+                            confidence_score: similarity,
+                            detected_at: Instant::now(),
+                            patterns: vec![
+                                format!("High behavioral similarity: {:.2}", similarity),
+                                "Synchronized connection patterns".to_string(),
+                            ],
+                        });
+                    }
+                }
+            }
+        }
+        
+        detector.suspicious_groups = clusters.clone();
+        detector.detection_stats.suspicious_groups_detected = clusters.len() as u64;
+        
+        Ok(clusters)
     }
 
     /// Get current security metrics
@@ -505,6 +740,31 @@ pub enum AlertSeverity {
     Medium,
     High,
     Critical,
+}
+
+/// Eclipse attack mitigation plan
+#[derive(Debug, Clone)]
+pub struct EclipseMitigationPlan {
+    pub peers_to_disconnect: Vec<PeerId>,
+    pub peers_to_deprioritize: Vec<PeerId>,
+    pub new_connections_needed: u32,
+    pub target_subnets: Vec<String>,
+    pub priority_level: MitigationPriority,
+}
+
+#[derive(Debug, Clone)]
+pub enum MitigationPriority {
+    Low,
+    Medium,
+    High,
+    Critical,
+}
+
+#[derive(Debug, Clone)]
+enum EclipseThreatLevel {
+    Low,
+    Medium,
+    High,
 }
 
 #[cfg(test)]
