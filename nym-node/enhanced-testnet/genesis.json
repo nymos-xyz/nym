@@ -1,0 +1,84 @@
+{
+  "chain_id": "nym-enhanced-testnet",
+  "genesis_time": "2025-01-07T12:00:00Z",
+  "initial_validators": [
+    {
+      "name": "validator_0",
+      "public_key": "ed25519_pk_1234567890abcdef",
+      "voting_power": 100,
+      "address": "nym1qjk2rem9dq6h2c5tqjlsmlzc4asl4xjxz8p2k"
+    },
+    {
+      "name": "validator_1", 
+      "public_key": "ed25519_pk_abcdef1234567890",
+      "voting_power": 100,
+      "address": "nym1qjk2rem9dq6h2c5tqjlsmlzc4asl4xjxz8p3k"
+    },
+    {
+      "name": "validator_2",
+      "public_key": "ed25519_pk_fedcba0987654321", 
+      "voting_power": 100,
+      "address": "nym1qjk2rem9dq6h2c5tqjlsmlzc4asl4xjxz8p4k"
+    }
+  ],
+  "initial_balances": {
+    "nym1qjk2rem9dq6h2c5tqjlsmlzc4asl4xjxz8p2k": 1000000000,
+    "nym1qjk2rem9dq6h2c5tqjlsmlzc4asl4xjxz8p3k": 1000000000,
+    "nym1qjk2rem9dq6h2c5tqjlsmlzc4asl4xjxz8p4k": 1000000000,
+    "nym1qjk2rem9dq6h2c5tqjlsmlzc4asl4xjxdev_fund": 5000000000,
+    "nym1qjk2rem9dq6h2c5tqjlsmlzc4asl4xjxeco_fund": 3000000000
+  },
+  "consensus_params": {
+    "hybrid_consensus": {
+      "pow_enabled": true,
+      "pos_enabled": true,
+      "pow_weight": 0.5,
+      "pos_weight": 0.5,
+      "block_time": 5,
+      "finality_threshold": 67
+    },
+    "network_security": {
+      "max_connections_per_ip": 3,
+      "sybil_detection_enabled": true,
+      "eclipse_protection_enabled": true,
+      "dos_mitigation_enabled": true
+    }
+  },
+  "app_state": {
+    "domain_registry": {
+      "admin": "nym1qjk2rem9dq6h2c5tqjlsmlzc4asl4xjxz8p2k",
+      "base_prices": {
+        "standard": 1000,
+        "premium": 5000,
+        "vanity": 2000,
+        "organization": 3000,
+        "community": 1500
+      },
+      "revenue_distribution": {
+        "development_percentage": 0.25,
+        "ecosystem_percentage": 0.20,
+        "validator_percentage": 0.30,
+        "creator_percentage": 0.10,
+        "burn_percentage": 0.15
+      }
+    },
+    "governance": {
+      "proposal_threshold": 10000,
+      "quorum_threshold": 0.1,
+      "voting_period": 604800,
+      "timelock_period": 172800,
+      "quadratic_voting": true,
+      "emergency_council": [
+        "nym1qjk2rem9dq6h2c5tqjlsmlzc4asl4xjxz8p2k",
+        "nym1qjk2rem9dq6h2c5tqjlsmlzc4asl4xjxz8p3k"
+      ]
+    },
+    "pricing_engine": {
+      "adaptive_pricing_enabled": true,
+      "market_analysis_enabled": true,
+      "trending_keywords": ["ai", "crypto", "nft", "defi", "web3", "dao"],
+      "volatility_protection": true
+    }
+  },
+  "hash": "0x1234567890abcdef1234567890abcdef12345678"
+}

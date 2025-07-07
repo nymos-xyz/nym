@@ -1,0 +1,77 @@
+node_id = "enhanced_node_2"
+
+[network]
+listen_addr = "0.0.0.0:30335"
+max_peers = 50
+enable_privacy_routing = true
+mix_strategy = "random_delay"
+cover_traffic_rate = 0.1
+
+# Enhanced network security
+[network.security]
+enable_sybil_detection = true
+enable_eclipse_protection = true
+enable_dos_mitigation = true
+max_connections_per_ip = 3
+rate_limit_window = 60
+ban_duration_seconds = 3600
+
+[storage]
+data_dir = "./enhanced-testnet/node2/data"
+max_storage_gb = 10
+enable_pruning = true
+pruning_interval_hours = 24
+enable_archival = false
+
+[consensus]
+consensus_type = "Hybrid"
+pow_enabled = true
+pos_enabled = true
+pow_weight = 0.5
+pos_weight = 0.5
+block_time_seconds = 5
+finality_threshold = 67
+
+[rpc]
+enabled = true
+listen_addr = "127.0.0.1:9935"
+max_connections = 100
+auth_enabled = false
+
+[compute]
+enabled = true
+max_jobs = 5
+supported_runtimes = ["wasm", "docker"]
+
+[economics]
+enable_adaptive_emissions = true
+enable_fee_burning = true
+min_stake_amount = 1000
+validator_reward_percentage = 0.05
+
+# Enhanced smart contract integration
+[contracts]
+enable_domain_registry = true
+enable_governance = true
+enable_adaptive_pricing = true
+contract_gas_limit = 10000000
+
+[domain_registry]
+base_domain_price = 1000
+enable_dynamic_pricing = true
+enable_market_analysis = true
+burn_percentage = 0.15
+
+[governance]
+enable_quadratic_voting = true
+enable_delegation = true
+proposal_threshold = 10000
+voting_period_seconds = 604800
+
+[logging]
+level = "info"
+format = "pretty"
+bootstrap_peers = [
+  "/ip4/127.0.0.1/tcp/30333",
+  "/ip4/127.0.0.1/tcp/30334",
+]

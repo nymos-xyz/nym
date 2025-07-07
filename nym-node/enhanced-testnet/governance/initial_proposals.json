@@ -1,0 +1,48 @@
+{
+  "proposals": [
+    {
+      "id": 1,
+      "title": "Initialize Domain Pricing Parameters",
+      "description": "Set initial pricing for .quid and .axon domains with adaptive mechanisms",
+      "type": "ParameterUpdate",
+      "proposer": "nym1qjk2rem9dq6h2c5tqjlsmlzc4asl4xjxz8p2k",
+      "actions": [
+        {
+          "type": "UpdatePricing",
+          "contract_address": "nym_pricing_fedcba0987654321",
+          "parameters": {
+            "quid_base_price": "2000",
+            "axon_base_price": "1000",
+            "enable_market_analysis": "true",
+            "volatility_protection": "true"
+          }
+        }
+      ],
+      "voting_starts": "2025-01-07T13:00:00Z",
+      "voting_ends": "2025-01-14T13:00:00Z",
+      "status": "Active"
+    },
+    {
+      "id": 2,
+      "title": "Enable Revenue Distribution",
+      "description": "Activate automatic revenue distribution and token burning mechanisms",
+      "type": "TokenomicsUpdate", 
+      "proposer": "nym1qjk2rem9dq6h2c5tqjlsmlzc4asl4xjxz8p3k",
+      "actions": [
+        {
+          "type": "UpdateRevenue",
+          "parameters": {
+            "burn_percentage": "0.15",
+            "development_percentage": "0.25",
+            "ecosystem_percentage": "0.20",
+            "validator_percentage": "0.30",
+            "creator_percentage": "0.10"
+          }
+        }
+      ],
+      "voting_starts": "2025-01-07T13:00:00Z", 
+      "voting_ends": "2025-01-14T13:00:00Z",
+      "status": "Active"
+    }
+  ]
+}

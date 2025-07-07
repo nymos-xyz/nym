@@ -22,6 +22,8 @@ members = [
     "nym-compute",
     "nym-economics",
     "nym-transparency",
+    "nym-vm",
+    "nym-privacy",
 ]
 
 [workspace.dependencies]
@@ -81,6 +83,8 @@ nym-performance = { path = "nym-performance" }
 nym-compute = { path = "nym-compute" }
 nym-economics = { path = "nym-economics" }
 nym-transparency = { path = "nym-transparency" }
+nym-vm = { path = "nym-vm" }
+nym-privacy = { path = "nym-privacy" }
 
 tokio = { workspace = true }
 tracing = { workspace = true }

@@ -23,6 +23,7 @@ pub mod integration;
 pub mod reputation;
 pub mod node_registry;
 pub mod security;
+pub mod network_security;
 
 pub use error::{NetworkError, NetworkResult};
 pub use peer::{PeerId, PeerInfo, PeerManager};
@@ -52,3 +53,7 @@ pub use integration::{EnhancedNetworkNode, EnhancedNodeConfig, create_enhanced_c
 pub use reputation::{ReputationScore, ReputationManager, ReputationConfig};
 pub use node_registry::{NodeRecord, NodeRegistry, NodeStatus};
 pub use security::{NetworkSecurityManager, SecurityConfig, SecurityAlert, ThreatType, SecurityStats};
+pub use network_security::{
+    NetworkSecurityManager as AdvancedSecurityManager, SecurityConfig as AdvancedSecurityConfig,
+    SecurityMetrics, SecurityAlert as AdvancedSecurityAlert, AlertType, AlertSeverity
+};
