@@ -25,6 +25,7 @@ pub mod node_registry;
 pub mod security;
 pub mod network_security;
 pub mod performance_optimizer;
+pub mod security_optimization;
 
 pub use error::{NetworkError, NetworkResult};
 pub use peer::{PeerId, PeerInfo, PeerManager};
@@ -61,4 +62,8 @@ pub use network_security::{
 pub use performance_optimizer::{
     NetworkPerformanceOptimizer, PerformanceConfig, ResourceAllocationStrategy,
     CurrentPerformanceMetrics, PerformancePrediction, OptimizationResult
+};
+pub use security_optimization::{
+    SecurityOptimizationManager, SecurityOptimizationConfig, 
+    GeographicDiversityReport, PerformanceOptimizationReport, OptimizationMetrics
 };
