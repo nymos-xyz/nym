@@ -12,6 +12,7 @@ pub mod security_audit;
 pub mod vulnerability_scanner;
 pub mod bug_bounty;
 pub mod penetration_testing;
+pub mod performance_optimizer;
 
 pub use config::NodeConfig;
 pub use error::{NodeError, Result};
@@ -24,6 +25,7 @@ pub use security_audit::SecurityAudit;
 pub use vulnerability_scanner::VulnerabilityScanner;
 pub use bug_bounty::BugBountyProgram;
 pub use penetration_testing::PenetrationTestingFramework;
+pub use performance_optimizer::PerformanceOptimizer;
 
 #[cfg(test)]
 mod tests {
