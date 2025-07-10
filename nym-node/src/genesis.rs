@@ -129,17 +129,70 @@ impl GenesisBlock {
     }
     
     pub fn create_mainnet(chain_id: String) -> Self {
-        // For mainnet, we'd have real validator information
-        // This is just a placeholder structure
-        let validators = vec![];
-        let balances = HashMap::new();
+        // Initial mainnet validators (placeholder addresses)
+        let validators = vec![
+            GenesisValidator {
+                address: "nym1mainnetvalidator1000000000000000001".to_string(),
+                public_key: "nympubmainnetvalidator1000000000000000001".to_string(),
+                voting_power: 1000,
+                name: "Genesis Validator 1".to_string(),
+            },
+            GenesisValidator {
+                address: "nym1mainnetvalidator1000000000000000002".to_string(),
+                public_key: "nympubmainnetvalidator1000000000000000002".to_string(),
+                voting_power: 1000,
+                name: "Genesis Validator 2".to_string(),
+            },
+            GenesisValidator {
+                address: "nym1mainnetvalidator1000000000000000003".to_string(),
+                public_key: "nympubmainnetvalidator1000000000000000003".to_string(),
+                voting_power: 1000,
+                name: "Genesis Validator 3".to_string(),
+            },
+            GenesisValidator {
+                address: "nym1mainnetvalidator1000000000000000004".to_string(),
+                public_key: "nympubmainnetvalidator1000000000000000004".to_string(),
+                voting_power: 1000,
+                name: "Genesis Validator 4".to_string(),
+            },
+            GenesisValidator {
+                address: "nym1mainnetvalidator1000000000000000005".to_string(),
+                public_key: "nympubmainnetvalidator1000000000000000005".to_string(),
+                voting_power: 1000,
+                name: "Genesis Validator 5".to_string(),
+            },
+        ];
+        
+        // Initial token distribution for mainnet
+        let mut balances = HashMap::new();
+        
+        // Genesis validators get initial stakes
+        for validator in &validators {
+            balances.insert(validator.address.clone(), 50_000_000); // 50M NYM each
+        }
+        
+        // Foundation allocation
+        balances.insert("nym1foundation00000000000000000000000001".to_string(), 2_000_000_000); // 2B NYM
+        
+        // Development fund
+        balances.insert("nym1development0000000000000000000001".to_string(), 1_000_000_000); // 1B NYM
+        
+        // Ecosystem fund
+        balances.insert("nym1ecosystem000000000000000000000001".to_string(), 500_000_000); // 500M NYM
+        
+        // Community treasury
+        balances.insert("nym1treasury000000000000000000000001".to_string(), 300_000_000); // 300M NYM
         
         let mut genesis = Self::new(chain_id, validators, balances);
         
         // Mainnet-specific parameters
         genesis.consensus_params.block_time_seconds = 60; // 1 minute blocks
+        genesis.consensus_params.max_block_size = 2 * 1024 * 1024; // 2MB blocks
+        genesis.consensus_params.max_transactions_per_block = 5000; // Higher TPS
         genesis.app_state.total_supply = 10_000_000_000; // 10 billion NYM
         genesis.app_state.initial_emission_rate = 0.02; // 2% annual
+        genesis.app_state.min_stake_amount = 10000; // Higher minimum stake
+        genesis.app_state.validator_reward_percentage = 0.03; // 3% validator rewards
         
         // Recalculate hash after parameter changes
         genesis.hash = genesis.calculate_hash();

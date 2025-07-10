@@ -1,0 +1,57 @@
+# Nym Light Node Configuration
+# Lightweight configuration for users who want to participate without full resources
+
+[network]
+listen_addr = "0.0.0.0:30333"
+bootstrap_peers = [
+    "bootstrap1.nym.network:30333",
+    "bootstrap2.nym.network:30333",
+    "bootstrap3.nym.network:30333"
+]
+max_peers = 25
+enable_privacy_routing = true
+mix_strategy = "random_delay"
+cover_traffic_rate = 0.2
+
+[storage]
+data_dir = "~/.nym-light/data"
+max_storage_gb = 50
+enable_pruning = true
+pruning_interval_hours = 6
+enable_archival = false
+
+[consensus]
+consensus_type = "Hybrid"
+pow_enabled = false  # Light nodes don't mine
+pos_enabled = false  # Light nodes don't validate
+pow_weight = 0.5
+pos_weight = 0.5
+block_time_seconds = 60
+finality_threshold = 67
+
+[rpc]
+enabled = true
+listen_addr = "127.0.0.1:9933"
+max_connections = 100
+auth_enabled = true
+
+[compute]
+enabled = false  # Light nodes don't run compute jobs
+max_jobs = 0
+supported_runtimes = []
+
+[compute.resource_limits]
+max_memory_mb = 1024
+max_cpu_cores = 1
+max_execution_time_seconds = 300
+
+[economics]
+enable_adaptive_emissions = true
+enable_fee_burning = true
+min_stake_amount = 1000
+validator_reward_percentage = 0.03
+
+[logging]
+level = "error"
+format = "pretty"
+file_path = "~/.nym-light/logs/light.log"

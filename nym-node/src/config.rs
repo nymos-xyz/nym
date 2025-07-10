@@ -220,4 +220,40 @@ impl NodeConfig {
         self.storage.max_storage_gb = 1; // Lower storage for testing
         self.network.max_peers = 10; // Fewer peers for testing
     }
+    
+    pub fn set_mainnet_config(&mut self) {
+        // Mainnet-specific configuration
+        self.consensus.block_time_seconds = 60; // 1 minute blocks for mainnet
+        self.consensus.finality_threshold = 67; // 67% finality threshold
+        self.storage.max_storage_gb = 500; // Higher storage for mainnet
+        self.storage.enable_archival = true; // Enable archival for mainnet
+        self.network.max_peers = 100; // More peers for mainnet
+        self.network.enable_privacy_routing = true; // Full privacy on mainnet
+        self.economics.min_stake_amount = 10000; // Higher minimum stake
+        self.economics.validator_reward_percentage = 0.03; // 3% validator rewards
+        self.rpc.max_connections = 1000; // More RPC connections
+        self.logging.level = "warn".to_string(); // Less verbose logging
+    }
+    
+    pub fn create_mainnet_bootstrap_peers() -> Vec<String> {
+        vec![
+            // Mainnet bootstrap nodes (placeholder addresses)
+            "bootstrap1.nym.network:30333".to_string(),
+            "bootstrap2.nym.network:30333".to_string(),
+            "bootstrap3.nym.network:30333".to_string(),
+            "bootstrap4.nym.network:30333".to_string(),
+            "bootstrap5.nym.network:30333".to_string(),
+        ]
+    }
+    
+    pub fn set_bootstrap_config(&mut self) {
+        // Bootstrap node configuration
+        self.network.bootstrap_peers = vec![]; // Bootstrap nodes don't need peers initially
+        self.network.max_peers = 200; // Bootstrap nodes support more peers
+        self.storage.enable_archival = true; // Bootstrap nodes are archival
+        self.storage.max_storage_gb = 1000; // More storage for bootstrap
+        self.rpc.max_connections = 2000; // More RPC connections
+        self.consensus.block_time_seconds = 60; // Standard mainnet timing
+        self.logging.level = "info".to_string(); // More detailed logging for bootstrap
+    }
 }

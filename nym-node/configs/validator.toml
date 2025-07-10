@@ -1,0 +1,57 @@
+# Nym Validator Node Configuration
+# Optimized configuration for validator nodes participating in consensus
+
+[network]
+listen_addr = "0.0.0.0:30333"
+bootstrap_peers = [
+    "bootstrap1.nym.network:30333",
+    "bootstrap2.nym.network:30333",
+    "bootstrap3.nym.network:30333"
+]
+max_peers = 75
+enable_privacy_routing = true
+mix_strategy = "fixed_delay"  # More predictable for validators
+cover_traffic_rate = 0.15
+
+[storage]
+data_dir = "~/.nym-validator/data"
+max_storage_gb = 200
+enable_pruning = true
+pruning_interval_hours = 12
+enable_archival = false
+
+[consensus]
+consensus_type = "Hybrid"
+pow_enabled = true
+pos_enabled = true
+pow_weight = 0.5
+pos_weight = 0.5
+block_time_seconds = 60
+finality_threshold = 67
+
+[rpc]
+enabled = true
+listen_addr = "127.0.0.1:9933"
+max_connections = 500
+auth_enabled = true
+
+[compute]
+enabled = true
+max_jobs = 25
+supported_runtimes = ["wasm", "docker"]
+
+[compute.resource_limits]
+max_memory_mb = 4096
+max_cpu_cores = 2
+max_execution_time_seconds = 1800
+
+[economics]
+enable_adaptive_emissions = true
+enable_fee_burning = true
+min_stake_amount = 25000
+validator_reward_percentage = 0.03
+
+[logging]
+level = "info"
+format = "pretty"
+file_path = "~/.nym-validator/logs/validator.log"

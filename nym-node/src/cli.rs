@@ -32,6 +32,10 @@ pub enum Commands {
         /// Create configuration for mainnet
         #[arg(long)]
         mainnet: bool,
+        
+        /// Node type (validator, bootstrap, light)
+        #[arg(long, default_value = "validator")]
+        node_type: String,
     },
     
     /// Start the node
