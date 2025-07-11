@@ -1,0 +1,23 @@
+[package]
+name = "nym-defi"
+version = "0.1.0"
+edition = "2021"
+description = "DeFi infrastructure for Nym blockchain with privacy-preserving protocols"
+
+[dependencies]
+tokio = { version = "1.0", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+anyhow = "1.0"
+thiserror = "1.0"
+rand = "0.8"
+uuid = { version = "1.0", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+
+# Nym dependencies
+nym-crypto = { path = "../nym-crypto" }
+nym-core = { path = "../nym-core" }
+nym-privacy = { path = "../nym-privacy" }
+
+[dev-dependencies]
+tokio-test = "0.4"
