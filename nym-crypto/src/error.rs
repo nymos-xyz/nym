@@ -37,4 +37,25 @@ pub enum CryptoError {
     
     #[error("Cryptographic operation failed: {reason}")]
     OperationFailed { reason: String },
+    
+    #[error("Invalid threshold: {0}")]
+    InvalidThreshold,
+    
+    #[error("Insufficient shares for recovery")]
+    InsufficientShares,
+    
+    #[error("Invalid balance: inputs != outputs")]
+    InvalidBalance,
+    
+    #[error("Audit key not found")]
+    AuditKeyNotFound,
+    
+    #[error("Insufficient permissions")]
+    InsufficientPermissions,
+    
+    #[error("Audit key expired")]
+    AuditKeyExpired,
+    
+    #[error("Decryption failed")]
+    DecryptionFailed,
 }

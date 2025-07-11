@@ -13,6 +13,7 @@ pub mod signature;
 pub mod key_derivation;
 pub mod commitment;
 pub mod stealth;
+pub mod enhanced_stealth;
 pub mod zkstark;
 
 use serde::{Serialize, Deserialize};
@@ -23,6 +24,11 @@ pub use signature::{SecretKey, PublicKey, Signature, KeyPair};
 pub use key_derivation::derive_key;
 pub use commitment::{Commitment, CommitmentOpening, commit};
 pub use stealth::{StealthAddress, ViewKey, SpendKey, generate_stealth_address};
+pub use enhanced_stealth::{MultiSigStealthAddress, SubAddressGenerator, AddressReuseGuard, StealthRecoveryData};
+
+// Type aliases for compatibility
+pub type SigningKey = SecretKey;
+pub type VerifyingKey = PublicKey;
 
 /// Security levels aligned with NIST post-quantum standards
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -34,6 +40,11 @@ pub enum SecurityLevel {
     /// 256-bit quantum security (Level 5)
     Level5,
 }
+
+// Aliases for compatibility
+pub use SecurityLevel::Level1 as Level128;
+pub use SecurityLevel::Level3 as Level192;  
+pub use SecurityLevel::Level5 as Level256;
 
 impl SecurityLevel {
     /// Get the byte length for this security level

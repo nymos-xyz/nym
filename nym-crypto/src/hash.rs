@@ -4,6 +4,7 @@ use sha3::{Shake256, digest::{Update, ExtendableOutput, XofReader}};
 use serde::{Serialize, Deserialize};
 use zeroize::Zeroize;
 use std::fmt;
+use rand::RngCore;
 
 use crate::{CryptoError, CryptoResult, SecurityLevel};
 
@@ -46,6 +47,27 @@ impl Hash256 {
         
         let mut array = [0u8; 32];
         array.copy_from_slice(&bytes);
+        Ok(Self(array))
+    }
+    
+    /// Generate a random hash
+    pub fn random<R: rand::RngCore>(rng: &mut R) -> Self {
+        let mut bytes = [0u8; 32];
+        rng.fill_bytes(&mut bytes);
+        Self(bytes)
+    }
+    
+    /// Create hash from slice (converting length)
+    pub fn from_bytes_slice(bytes: &[u8]) -> CryptoResult<Self> {
+        if bytes.len() != 32 {
+            return Err(CryptoError::InvalidKeyLength { 
+                expected: 32, 
+                actual: bytes.len() 
+            });
+        }
+        
+        let mut array = [0u8; 32];
+        array.copy_from_slice(bytes);
         Ok(Self(array))
     }
 }
