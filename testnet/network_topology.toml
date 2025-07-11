@@ -1,0 +1,6 @@
+# Testnet Network Topology
+bootstrap_peers = [
+  "/ip4/127.0.0.1/tcp/30333",
+  "/ip4/127.0.0.1/tcp/30334",
+  "/ip4/127.0.0.1/tcp/30335",
+]

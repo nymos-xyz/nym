@@ -1,0 +1,48 @@
+{
+  "chain_id": "nym-testnet-local",
+  "initial_height": 1,
+  "consensus_params": {
+    "block_time": 5,
+    "finality_threshold": 67,
+    "hybrid_consensus": {
+      "pow_weight": 0.5,
+      "pos_weight": 0.5
+    }
+  },
+  "validators": [
+    {
+      "name": "validator-0",
+      "power": 100,
+      "pub_key": "mock_pubkey_0"
+    },
+    {
+      "name": "validator-1", 
+      "power": 100,
+      "pub_key": "mock_pubkey_1"
+    },
+    {
+      "name": "validator-2",
+      "power": 100,
+      "pub_key": "mock_pubkey_2"
+    }
+  ],
+  "privacy_config": {
+    "stealth_addresses_enabled": true,
+    "confidential_transactions_enabled": true,
+    "transaction_mixing_enabled": true,
+    "anonymity_set_size": 128,
+    "mixing_rounds": 3
+  },
+  "defi_config": {
+    "amm_enabled": true,
+    "lending_enabled": true,
+    "cross_chain_enabled": true,
+    "default_fee_rate": 30,
+    "mev_protection_enabled": true
+  },
+  "economics": {
+    "initial_supply": 1000000000,
+    "inflation_rate": 0.08,
+    "min_stake_amount": 1000
+  }
+}
