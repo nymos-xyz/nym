@@ -1,0 +1,408 @@
+# Nym Blockchain Monitoring and Observability Configuration
+# Production-ready monitoring setup for comprehensive system visibility
+
+[prometheus]
+# Prometheus metrics configuration
+enabled = true
+port = 8080
+metrics_path = "/metrics"
+scrape_interval = "15s"
+evaluation_interval = "15s"
+
+# Custom metrics for Nym-specific operations
+[prometheus.custom_metrics]
+privacy_transactions_total = "counter"
+mixing_rounds_completed = "counter"
+stealth_addresses_generated = "counter" 
+confidential_tx_verified = "counter"
+defi_swaps_executed = "counter"
+anonymity_set_size = "gauge"
+mix_coordinator_queue_size = "gauge"
+validator_stake_amount = "gauge"
+mempool_transaction_count = "gauge"
+
+[grafana]
+# Grafana dashboard configuration
+enabled = true
+port = 3000
+admin_user = "nym-admin"
+default_theme = "dark"
+
+# Pre-configured dashboards
+dashboards = [
+    "node-health",
+    "network-metrics", 
+    "privacy-metrics",
+    "defi-metrics",
+    "consensus-metrics",
+    "security-alerts"
+]
+
+[alertmanager]
+# Alert manager for critical system notifications
+enabled = true
+port = 9093
+smtp_smarthost = "localhost:587"
+smtp_from = "alerts@nym.network"
+
+# Critical alert rules
+[[alertmanager.alerts]]
+name = "NodeDown"
+condition = "up == 0"
+for = "1m"
+severity = "critical"
+description = "Nym node is down"
+
+[[alertmanager.alerts]]
+name = "HighMemoryUsage"
+condition = "node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100 < 10"
+for = "5m"
+severity = "warning"
+description = "Node memory usage is above 90%"
+
+[[alertmanager.alerts]]
+name = "DiskSpaceLow"
+condition = "node_filesystem_avail_bytes{mountpoint=\"/\"} / node_filesystem_size_bytes{mountpoint=\"/\"} * 100 < 10"
+for = "5m"
+severity = "critical"
+description = "Disk space is below 10%"
+
+[[alertmanager.alerts]]
+name = "NetworkPartition"
+condition = "nym_network_peers_connected < 3"
+for = "2m"
+severity = "critical"
+description = "Node has less than 3 network peers"
+
+[[alertmanager.alerts]]
+name = "ConsensusStalled"
+condition = "increase(nym_consensus_blocks_total[5m]) == 0"
+for = "5m"
+severity = "critical"
+description = "No new blocks produced in 5 minutes"
+
+[[alertmanager.alerts]]
+name = "MEVAttackDetected"
+condition = "increase(nym_mev_attacks_detected_total[1m]) > 0"
+for = "0s"
+severity = "critical"
+description = "MEV attack detected in transaction pool"
+
+[[alertmanager.alerts]]
+name = "AnonymitySetTooSmall"
+condition = "nym_anonymity_set_size < 32"
+for = "1m"
+severity = "warning"
+description = "Anonymity set size below recommended minimum"
+
+[jaeger]
+# Distributed tracing with Jaeger
+enabled = true
+agent_host = "localhost"
+agent_port = 6831
+sampling_rate = 0.1
+
+# Trace important operations
+trace_operations = [
+    "transaction_submission",
+    "block_production",
+    "consensus_voting",
+    "privacy_mixing",
+    "defi_operations",
+    "cross_chain_transfers"
+]
+
+[loki]
+# Log aggregation with Loki
+enabled = true
+url = "http://localhost:3100"
+tenant_id = "nym-blockchain"
+
+# Log levels and sources
+[loki.sources]
+node_logs = "/var/log/nym-node/*.log"
+consensus_logs = "/var/log/nym-node/consensus/*.log"
+privacy_logs = "/var/log/nym-node/privacy/*.log"
+defi_logs = "/var/log/nym-node/defi/*.log"
+security_logs = "/var/log/nym-node/security/*.log"
+
+[elasticsearch]
+# Log analysis and search with Elasticsearch
+enabled = false
+url = "http://localhost:9200"
+index_prefix = "nym-logs"
+retention_days = 30
+
+[opentelemetry]
+# OpenTelemetry configuration for observability
+enabled = true
+endpoint = "http://localhost:4317"
+service_name = "nym-blockchain"
+service_version = "1.0.0"
+
+# Instrumentation configuration
+[opentelemetry.tracing]
+sample_rate = 0.1
+max_spans_per_trace = 1000
+
+[opentelemetry.metrics]
+export_interval = "30s"
+export_timeout = "5s"
+
+[custom_monitoring]
+# Nym-specific monitoring features
+
+[custom_monitoring.privacy_metrics]
+# Privacy-specific monitoring
+track_anonymity_sets = true
+monitor_mixing_latency = true
+detect_timing_attacks = true
+measure_privacy_leakage = false
+
+# Privacy KPIs
+min_anonymity_set_size = 32
+max_mixing_latency_ms = 5000
+max_timing_correlation = 0.1
+
+[custom_monitoring.defi_metrics]
+# DeFi-specific monitoring
+track_amm_pools = true
+monitor_swap_latency = true
+detect_mev_attacks = true
+measure_slippage = true
+
+# DeFi KPIs
+max_swap_latency_ms = 2000
+max_slippage_percent = 5.0
+mev_detection_threshold = 0.01
+
+[custom_monitoring.consensus_metrics]
+# Consensus-specific monitoring
+track_validator_performance = true
+monitor_fork_resolution = true
+measure_finality_time = true
+detect_staking_attacks = true
+
+# Consensus KPIs
+max_block_time_ms = 6000
+max_finality_time_ms = 30000
+min_validator_uptime_percent = 95.0
+
+[custom_monitoring.security_metrics]
+# Security-specific monitoring
+track_failed_auth_attempts = true
+monitor_unusual_patterns = true
+detect_dos_attacks = true
+measure_encryption_overhead = true
+
+# Security KPIs
+max_failed_auth_per_minute = 100
+max_dos_requests_per_second = 1000
+max_encryption_overhead_percent = 10.0
+
+[performance_monitoring]
+# System performance monitoring
+
+[performance_monitoring.cpu]
+enabled = true
+alert_threshold_percent = 80
+measurement_interval = "30s"
+
+[performance_monitoring.memory]
+enabled = true
+alert_threshold_percent = 85
+include_swap = true
+measurement_interval = "30s"
+
+[performance_monitoring.disk]
+enabled = true
+alert_threshold_percent = 90
+include_inode_usage = true
+monitored_filesystems = ["/", "/data", "/logs"]
+measurement_interval = "60s"
+
+[performance_monitoring.network]
+enabled = true
+monitor_bandwidth = true
+monitor_connections = true
+monitor_latency = true
+measurement_interval = "15s"
+
+[business_metrics]
+# Business and operational metrics
+
+[business_metrics.transaction_metrics]
+total_transactions = "counter"
+transaction_fees_collected = "counter"
+average_transaction_size = "histogram"
+transaction_success_rate = "gauge"
+
+[business_metrics.validator_metrics]
+total_validators = "gauge"
+active_validators = "gauge"
+validator_rewards_distributed = "counter"
+slashing_events = "counter"
+
+[business_metrics.economic_metrics]
+total_supply = "gauge"
+circulating_supply = "gauge"
+staking_ratio = "gauge"
+inflation_rate = "gauge"
+
+[alerting_rules]
+# Custom alerting rules for Nym blockchain
+
+[[alerting_rules.privacy]]
+name = "PrivacyCompromised"
+expression = "nym_privacy_anonymity_set_size < 16"
+for = "1m"
+severity = "critical"
+message = "Privacy anonymity set size critically low"
+
+[[alerting_rules.privacy]]
+name = "MixingDelayed" 
+expression = "nym_privacy_mixing_latency_seconds > 10"
+for = "2m"
+severity = "warning"
+message = "Transaction mixing experiencing delays"
+
+[[alerting_rules.defi]]
+name = "DeFiLiquidityLow"
+expression = "nym_defi_pool_liquidity_usd < 10000"
+for = "5m"
+severity = "warning"
+message = "DeFi pool liquidity below recommended threshold"
+
+[[alerting_rules.defi]]
+name = "DeFiSlippageHigh"
+expression = "nym_defi_swap_slippage_percent > 10"
+for = "1m"
+severity = "warning"
+message = "DeFi swap slippage exceeding 10%"
+
+[[alerting_rules.consensus]]
+name = "ValidatorMissedBlocks"
+expression = "increase(nym_consensus_missed_blocks_total[10m]) > 5"
+for = "0s"
+severity = "warning"
+message = "Validator missed more than 5 blocks in 10 minutes"
+
+[[alerting_rules.consensus]]
+name = "ForkDetected"
+expression = "increase(nym_consensus_forks_total[1m]) > 0"
+for = "0s"
+severity = "critical"
+message = "Blockchain fork detected"
+
+[log_monitoring]
+# Advanced log monitoring and analysis
+
+[log_monitoring.error_detection]
+enabled = true
+error_patterns = [
+    "ERROR",
+    "FATAL", 
+    "PANIC",
+    "CRITICAL",
+    "consensus error",
+    "privacy breach",
+    "mev attack",
+    "validator slashed"
+]
+
+[log_monitoring.anomaly_detection]
+enabled = true
+baseline_period = "24h"
+sensitivity = 0.8
+alert_on_anomalies = true
+
+[log_monitoring.compliance]
+enabled = true
+audit_log_retention = "365d"
+include_privacy_events = true
+include_financial_events = true
+
+[dashboard_configuration]
+# Dashboard layout and widgets
+
+[dashboard_configuration.node_health]
+widgets = [
+    "cpu_usage",
+    "memory_usage", 
+    "disk_usage",
+    "network_io",
+    "uptime",
+    "peer_connections"
+]
+refresh_interval = "30s"
+
+[dashboard_configuration.privacy_overview]
+widgets = [
+    "anonymity_set_size",
+    "mixing_throughput",
+    "stealth_addresses_active",
+    "confidential_transactions",
+    "privacy_score"
+]
+refresh_interval = "15s"
+
+[dashboard_configuration.defi_overview]
+widgets = [
+    "total_value_locked",
+    "daily_volume",
+    "active_pools",
+    "swap_success_rate",
+    "mev_protection_rate"
+]
+refresh_interval = "30s"
+
+[dashboard_configuration.security_overview]
+widgets = [
+    "security_alerts",
+    "failed_authentications",
+    "unusual_activity",
+    "encryption_health",
+    "audit_status"
+]
+refresh_interval = "10s"
+
+[data_retention]
+# Data retention policies
+
+[data_retention.metrics]
+high_resolution = "7d"    # 15s granularity
+medium_resolution = "30d" # 1m granularity  
+low_resolution = "365d"   # 1h granularity
+
+[data_retention.logs]
+debug_logs = "7d"
+info_logs = "30d"
+warning_logs = "90d"
+error_logs = "365d"
+audit_logs = "7y"
+
+[data_retention.traces]
+detailed_traces = "7d"
+sampled_traces = "30d"
+error_traces = "90d"
+
+[export_configuration]
+# Data export and backup
+
+[export_configuration.metrics]
+enabled = true
+format = "prometheus"
+destination = "/backup/metrics"
+schedule = "0 2 * * *"  # Daily at 2 AM
+
+[export_configuration.logs]
+enabled = true
+format = "json"
+destination = "/backup/logs"
+schedule = "0 3 * * *"  # Daily at 3 AM
+
+[export_configuration.dashboards]
+enabled = true
+format = "json"
+destination = "/backup/dashboards"
+schedule = "0 4 * * 0"  # Weekly on Sunday at 4 AM

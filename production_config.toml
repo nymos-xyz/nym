@@ -1,0 +1,198 @@
+# Nym Blockchain Production Configuration
+# Optimized for mainnet deployment with security and performance
+
+[network]
+# Network identification
+chain_id = "nym-mainnet-1"
+network_type = "mainnet"
+p2p_port = 26656
+rpc_port = 26657
+grpc_port = 9090
+api_port = 1317
+
+# Node discovery and connectivity
+seeds = [
+    "seeds.nym.network:26656",
+    "seed-1.nym.network:26656", 
+    "seed-2.nym.network:26656"
+]
+persistent_peers = []
+max_num_inbound_peers = 40
+max_num_outbound_peers = 10
+pex = true
+seed_mode = false
+
+# Security settings
+allow_duplicate_ip = false
+max_packet_msg_payload_size = 1024
+send_rate = 5120000
+recv_rate = 5120000
+
+[consensus]
+# Hybrid PoW/PoS consensus parameters
+pow_weight = 0.4
+pos_weight = 0.6
+block_time = "6s"
+timeout_propose = "3s"
+timeout_prevote = "1s"
+timeout_precommit = "1s"
+timeout_commit = "1s"
+
+# Validator settings
+max_validators = 100
+validator_rotation_period = 10800  # 3 hours in blocks
+min_self_delegation = "10000000"  # 10M NYM tokens
+
+# Mining configuration
+mining_enabled = true
+mining_algorithm = "RandomX-Nym"
+difficulty_adjustment_window = 144  # ~1 day
+target_block_time = 6
+
+[privacy]
+# Privacy feature configuration
+stealth_addresses_enabled = true
+confidential_transactions_enabled = true
+transaction_mixing_enabled = true
+anonymity_set_size = 128
+mixing_rounds = 3
+
+# Enhanced privacy features
+multisig_stealth_enabled = true
+sub_address_generation_enabled = true
+address_reuse_prevention_enabled = true
+
+# Privacy performance
+zk_proof_batch_size = 32
+commitment_batch_size = 64
+mixing_delay_blocks = 2
+
+[defi]
+# DeFi infrastructure settings
+amm_enabled = true
+lending_enabled = true
+cross_chain_enabled = true
+
+# Privacy-preserving AMM
+default_fee_rate = 30  # 0.3%
+protocol_fee_rate = 5  # 0.05%
+min_liquidity = 1000
+max_slippage = 0.1
+mev_protection_enabled = true
+
+# Batch processing for MEV protection
+batch_size = 50
+batch_interval = 2  # blocks
+ordering_strategy = "FairOrdering"
+
+[storage]
+# Storage optimization
+pruning = "custom"
+pruning_keep_recent = 100000
+pruning_keep_every = 2000
+pruning_interval = 10
+
+# Cut-through optimization
+cut_through_enabled = true
+cut_through_threshold = 1000  # transactions
+archive_threshold_gb = 100
+
+# Database settings
+db_backend = "rocksdb"
+db_dir = "data"
+snapshot_interval = 2000
+snapshot_keep_recent = 5
+
+[security]
+# Cryptographic settings
+signature_algorithm = "ML-DSA-44"
+hash_algorithm = "SHAKE256"
+key_derivation = "HKDF-SHAKE256"
+
+# Security levels
+default_security_level = "Level128"  
+min_security_level = "Level128"
+quantum_resistance = true
+
+# Audit and compliance
+audit_enabled = true
+compliance_mode = "selective_revelation"
+institutional_audit_enabled = true
+
+[economics]
+# Token economics
+initial_supply = 1000000000  # 1B NYM tokens
+inflation_rate = 0.08  # 8% annual
+min_inflation = 0.005   # 0.5%
+max_inflation = 0.15    # 15%
+
+# Fee structure
+base_fee = 0.001  # NYM
+priority_fee_multiplier = 1.5
+gas_price_minimum = 0.0001
+
+# Staking parameters
+unbonding_period = "21days"
+max_validators = 100
+min_validator_stake = "1000000"  # 1M NYM
+delegation_reward_rate = 0.85
+
+[monitoring]
+# Observability and monitoring
+prometheus_enabled = true
+prometheus_port = 8080
+metrics_enabled = true
+telemetry_enabled = true
+log_level = "info"
+log_format = "json"
+
+# Performance monitoring
+performance_monitoring = true
+benchmark_interval = 3600  # 1 hour
+memory_monitoring = true
+network_monitoring = true
+
+[api]
+# API configuration
+enable_rest_api = true
+enable_grpc = true
+enable_graphql = false
+enable_websocket = true
+
+# Rate limiting
+rate_limit_enabled = true
+rate_limit_requests_per_minute = 1000
+rate_limit_burst = 100
+
+# CORS settings
+cors_allowed_origins = ["*"]
+cors_allowed_methods = ["GET", "POST", "OPTIONS"]
+
+[governance]
+# On-chain governance
+voting_period = "7days"
+deposit_period = "14days"
+min_deposit = "10000000"  # 10M NYM
+quorum = 0.334
+threshold = 0.5
+veto_threshold = 0.334
+
+[upgrade]
+# Network upgrade parameters
+upgrade_height = 0
+halt_height = 0
+min_upgrade_height = 1000000
+
+[backup]
+# Backup and recovery
+backup_enabled = true
+backup_interval = "24h"
+backup_retention = "30days"
+snapshot_enabled = true
+
+[development]
+# Development and testing (disabled in production)
+dev_mode = false
+test_accounts = false
+faucet_enabled = false
+debug_logging = false
