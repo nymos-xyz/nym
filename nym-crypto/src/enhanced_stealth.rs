@@ -15,7 +15,7 @@ use crate::{
     CryptoError, CryptoResult, Hash256, hash_multiple,
     key_derivation::derive_key, SecurityLevel,
     stealth::{StealthAddress, ViewKey, SpendKey},
-    signature::{SigningKey, VerifyingKey},
+    VerifyingKey,
 };
 
 /// Multi-signature stealth address supporting threshold signatures
@@ -125,13 +125,54 @@ impl MultiSigStealthAddress {
                 continue;
             }
 
-            // Verify signature (placeholder - would use actual signature verification)
-            if self.signer_pubkeys[*signer_idx].as_bytes() == &signature[..32] {
+            // Create hash of message for signature verification
+            let message_hash = hash_multiple(&[
+                b"multisig_verify",
+                message,
+                self.address.address().as_bytes(),
+                &signer_idx.to_le_bytes(),
+            ]);
+
+            // Verify signature using the signer's public key
+            // This is a placeholder implementation - in production would use actual signature verification
+            let expected_sig = hash_multiple(&[
+                b"signature",
+                &self.signer_pubkeys[*signer_idx].as_bytes(),
+                message_hash.as_bytes(),
+            ]);
+
+            if signature.len() >= 32 && &signature[..32] == expected_sig.as_bytes() {
                 valid_sigs += 1;
             }
         }
 
         Ok(valid_sigs >= self.threshold)
+    }
+
+    /// Generate a signature for this multisig address
+    pub fn sign_as_signer(&self, signer_idx: usize, message: &[u8]) -> CryptoResult<Vec<u8>> {
+        if signer_idx >= self.signer_pubkeys.len() {
+            return Err(CryptoError::OperationFailed {
+                reason: "Invalid signer index".to_string(),
+            });
+        }
+
+        // Create hash of message for signature
+        let message_hash = hash_multiple(&[
+            b"multisig_verify",
+            message,
+            self.address.address().as_bytes(),
+            &signer_idx.to_le_bytes(),
+        ]);
+
+        // Generate signature (placeholder implementation)
+        let signature = hash_multiple(&[
+            b"signature",
+            &self.signer_pubkeys[signer_idx].as_bytes(),
+            message_hash.as_bytes(),
+        ]);
+
+        Ok(signature.as_bytes().to_vec())
     }
 }
 
@@ -149,22 +190,26 @@ impl SubAddressGenerator {
     /// Generate a sub-address for a specific category
     pub fn generate_sub_address(&mut self, category: &str) -> CryptoResult<StealthAddress> {
         // Get or create category index
-        let category_idx = self.categories.entry(category.to_string())
-            .or_insert_with(|| {
-                let idx = self.categories.len() as u64;
-                idx
-            });
+        let category_idx = if let Some(&idx) = self.categories.get(category) {
+            idx
+        } else {
+            let idx = self.categories.len() as u64;
+            self.categories.insert(category.to_string(), idx);
+            idx
+        };
 
         // Derive sub-address keys
         let sub_view_key = derive_key(
             self.master_view_key.as_bytes(),
             &format!("sub_view_{}_{}", category_idx, self.counter).as_bytes(),
-        )?;
+            self.master_view_key.security_level(),
+        );
 
         let sub_spend_key = derive_key(
             self.master_spend_key.as_bytes(),
             &format!("sub_spend_{}_{}", category_idx, self.counter).as_bytes(),
-        )?;
+            self.master_spend_key.security_level(),
+        );
 
         self.counter += 1;
 
@@ -176,7 +221,7 @@ impl SubAddressGenerator {
             &self.counter.to_le_bytes(),
         ]);
 
-        Ok(StealthAddress::new(address_hash, sub_view_key))
+        Ok(StealthAddress::new(address_hash, sub_view_key.to_vec()))
     }
 
     /// List all categories
@@ -291,8 +336,8 @@ mod tests {
         // Generate signer keys
         let signer_keys: Vec<_> = (0..3)
             .map(|_| {
-                let key = SigningKey::generate(&mut rng, SecurityLevel::Level128);
-                key.verifying_key()
+                let key = SigningKey::generate(&mut rng, SecurityLevel::Level1);
+                key.public_key()
             })
             .collect();
 
@@ -301,7 +346,7 @@ mod tests {
             &mut rng,
             2,
             signer_keys,
-            SecurityLevel::Level128,
+            SecurityLevel::Level1,
         ).unwrap();
 
         assert_eq!(multisig.threshold, 2);
@@ -312,8 +357,8 @@ mod tests {
     fn test_sub_address_generation() {
         let mut rng = OsRng;
         
-        let view_key = ViewKey::generate(&mut rng, SecurityLevel::Level128);
-        let spend_key = SpendKey::generate(&mut rng, SecurityLevel::Level128);
+        let view_key = ViewKey::generate(&mut rng, SecurityLevel::Level1);
+        let spend_key = SpendKey::generate(&mut rng, SecurityLevel::Level1);
         
         let mut generator = SubAddressGenerator::new(view_key, spend_key);
         
@@ -344,7 +389,7 @@ mod tests {
         
         // Test cleanup
         guard.cleanup_expired(1101);
-        let (used, tracked) = guard.get_stats();
+        let (_used, tracked) = guard.get_stats();
         assert_eq!(tracked, 0); // Should be cleaned up
     }
 }

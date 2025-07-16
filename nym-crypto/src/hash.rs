@@ -4,9 +4,7 @@ use sha3::{Shake256, digest::{Update, ExtendableOutput, XofReader}};
 use serde::{Serialize, Deserialize};
 use zeroize::Zeroize;
 use std::fmt;
-use rand::RngCore;
-
-use crate::{CryptoError, CryptoResult, SecurityLevel};
+use crate::{CryptoError, CryptoResult};
 
 /// Fixed-size hash output (32 bytes for 256-bit security)
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Zeroize)]

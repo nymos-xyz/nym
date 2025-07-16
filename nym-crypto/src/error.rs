@@ -38,7 +38,7 @@ pub enum CryptoError {
     #[error("Cryptographic operation failed: {reason}")]
     OperationFailed { reason: String },
     
-    #[error("Invalid threshold: {0}")]
+    #[error("Invalid threshold")]
     InvalidThreshold,
     
     #[error("Insufficient shares for recovery")]

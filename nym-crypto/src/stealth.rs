@@ -19,16 +19,18 @@ pub struct StealthAddress {
 }
 
 /// View key for detecting stealth address payments
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Zeroize, ZeroizeOnDrop)]
 pub struct ViewKey {
     key: Vec<u8>,
+    #[zeroize(skip)]
     security_level: SecurityLevel,
 }
 
 /// Spend key for spending from stealth addresses
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Zeroize, ZeroizeOnDrop)]
 pub struct SpendKey {
     key: Vec<u8>,
+    #[zeroize(skip)]
     security_level: SecurityLevel,
 }
 
@@ -273,5 +275,34 @@ mod tests {
         let recovered = StealthAddress::from_hex(&hex).unwrap();
         
         assert_eq!(addr, recovered);
+    }
+    
+    #[test]
+    fn test_zeroize_functionality() {
+        let mut rng = thread_rng();
+        let security_level = SecurityLevel::Level1;
+        
+        let mut view_key = ViewKey::generate(&mut rng, security_level);
+        let mut spend_key = SpendKey::generate(&mut rng, security_level);
+        
+        // Store original key data for comparison
+        let original_view_key_data = view_key.as_bytes().to_vec();
+        let original_spend_key_data = spend_key.as_bytes().to_vec();
+        
+        // Keys should have data initially
+        assert!(!original_view_key_data.is_empty());
+        assert!(!original_spend_key_data.is_empty());
+        
+        // Zeroize the keys
+        view_key.zeroize();
+        spend_key.zeroize();
+        
+        // Keys should be zeroed out
+        assert!(view_key.as_bytes().iter().all(|&b| b == 0));
+        assert!(spend_key.as_bytes().iter().all(|&b| b == 0));
+        
+        // Verify they're different from original
+        assert_ne!(view_key.as_bytes(), original_view_key_data);
+        assert_ne!(spend_key.as_bytes(), original_spend_key_data);
     }
 }

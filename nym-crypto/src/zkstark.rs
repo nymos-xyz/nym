@@ -32,6 +32,7 @@ pub struct Prover<C: Circuit> {
 
 /// Verifier for verifying zk-STARK proofs
 pub struct Verifier<C: Circuit> {
+    #[allow(dead_code)]
     circuit: C,
 }
 

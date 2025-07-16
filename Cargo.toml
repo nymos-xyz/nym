@@ -31,9 +31,9 @@ members = [
 sha3 = "0.10"
 rand = "0.8"
 rand_core = "0.6"
-zeroize = { version = "1.7", features = ["derive"] }
-subtle = "2.5"
-secrecy = { version = "0.8", features = ["serde"] }
+zeroize = { version = "1.6", features = ["derive"] }
+subtle = "2.4"
+secrecy = { version = "0.7", features = ["serde"] }
 hex = "0.4"
 
 # Serialization
@@ -67,7 +67,7 @@ uuid = { version = "1.0", features = ["v4", "serde"] }
 
 [dependencies]
 # QuID dependency - Nym uses QuID for authentication
-quid-core = { path = "../quid/quid-core" }
+# quid-core = { path = "../quid/quid-core" }
 
 # Core Nym components
 nym-core = { path = "nym-core" }

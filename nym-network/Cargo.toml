@@ -28,19 +28,20 @@ tracing = "0.1"
 chrono = { version = "0.4", features = ["serde"] }
 
 # Networking protocols
-libp2p = { version = "0.53", default-features = false, features = [
-    "tcp",
-    "dns", 
-    "noise",
-    "yamux",
-    "gossipsub",
-    "kad",
-    "identify",
-    "ping",
-    "macros",
-    "tokio"
-] }
+# libp2p = { version = "0.50", default-features = false, features = [
+#     "tcp",
+#     "dns", 
+#     "noise",
+#     "yamux",
+#     "gossipsub",
+#     "kad",
+#     "identify",
+#     "ping",
+#     "macros",
+#     "tokio"
+# ] }
 
 [dev-dependencies]
 tempfile = "3.0"
 tokio-test = "0.4"
+tracing-subscriber = "0.3"
